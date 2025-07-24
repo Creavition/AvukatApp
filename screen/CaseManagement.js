@@ -290,7 +290,7 @@ export default function CaseManagement({ navigation }) {
   useEffect(() => {
     let sonuc = davaListesi;
 
-  
+
     if (searchText.length > 0) {
       sonuc = searchDavalar(sonuc, searchText);
     }
@@ -519,30 +519,26 @@ export default function CaseManagement({ navigation }) {
     ];
 
     return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
-      >
+      <View style={styles.filtersWrapper}>
         {filters.map(filter => (
           <TouchableOpacity
             key={filter.key}
             style={[
-              styles.filterButton,
-              selectedFilter === filter.key && styles.filterButtonActive
+              styles.filterBtn,
+              selectedFilter === filter.key && styles.filterBtnActive
             ]}
             onPress={() => setSelectedFilter(filter.key)}
+            activeOpacity={0.7}
           >
             <Text style={[
-              styles.filterText,
-              selectedFilter === filter.key && styles.filterTextActive
+              styles.filterBtnText,
+              selectedFilter === filter.key && styles.filterBtnTextActive
             ]}>
               {filter.label} ({filter.count})
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
     );
   };
 
@@ -588,10 +584,12 @@ export default function CaseManagement({ navigation }) {
       </TouchableOpacity>
 
       {/* Filtre butonları */}
-      {renderFilters()}
+      <View style={styles.filterSection}>
+        {renderFilters()}
+      </View>
 
       {/* Sonuç sayısı */}
-      <View style={styles.resultContainer}>
+      <View style={styles.resultSection}>
         <Text style={styles.resultText}>
           {filtrelenmisListe.length} dava listeleniyor
         </Text>
@@ -631,12 +629,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     paddingHorizontal: screenWidth * 0.05,
-    paddingTop: screenHeight * 0.06, 
+    paddingTop: screenHeight * 0.06,
   },
   searchContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: screenHeight * 0.1, 
+    height: screenHeight * 0.1,
   },
   searchBar: {
     flexDirection: "row",
@@ -696,50 +694,45 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.03,
     fontWeight: 'bold',
   },
-  filterContainer: {
-    marginBottom: screenHeight * 0.02,
-    height: screenHeight * 0.06, // Daha küçük sabit yükseklik
+  filterSection: {
+    marginBottom: screenHeight * 0.015,
   },
-  filterContent: {
-    paddingRight: screenWidth * 0.05,
-    alignItems: 'center',
-    height: '100%',
+  filtersWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: screenWidth * 0.01,
   },
-  filterButton: {
-    paddingHorizontal: screenWidth * 0.04,
-    paddingVertical: screenHeight * 0.008, // Daha küçük padding
-    marginRight: screenWidth * 0.02,
-    borderRadius: screenWidth * 0.05,
-    backgroundColor: '#F5F5F5',
-    height: screenHeight * 0.04, // Daha küçük sabit yükseklik
-    justifyContent: 'center',
-    alignItems: 'center',
+  filterBtn: {
+    flex: 1,
+    marginHorizontal: screenWidth * 0.005,
+    paddingVertical: screenHeight * 0.008,
+    paddingHorizontal: screenWidth * 0.015,
+    backgroundColor: '#F8F9FA',
+    borderRadius: screenWidth * 0.02,
     borderWidth: 1,
-    borderColor: 'black',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    borderColor: '#DEE2E6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: screenHeight * 0.04, // Daha küçük yükseklik
   },
-  filterButtonActive: {
+  filterBtnActive: {
     backgroundColor: '#2196F3',
     borderColor: '#2196F3',
   },
-  filterText: {
+  filterBtnText: {
     fontSize: screenWidth * 0.032,
-    color: '#555',
+    color: '#495057',
     fontWeight: '600',
     textAlign: 'center',
   },
-  filterTextActive: {
+  filterBtnTextActive: {
     color: '#fff',
     fontWeight: 'bold',
   },
-  resultContainer: {
-    marginBottom: screenHeight * 0.015, // Daha küçük margin
-    height: screenHeight * 0.025, // Daha küçük sabit yükseklik
-    justifyContent: 'center',
+  // Sonuç Section
+  resultSection: {
+    marginBottom: screenHeight * 0.02,
+    paddingHorizontal: screenWidth * 0.01,
   },
   resultText: {
     fontSize: screenWidth * 0.035,

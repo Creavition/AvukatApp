@@ -1,8 +1,6 @@
 export const events = {
-    '2025-07-22': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
-    '2025-07-24': ['Dosya inceleme - 09:00'],
-    '2025-07-24': ['İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
-    '2025-07-22': ['Keşif - 14:00'],
+    '2025-07-22': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30', 'Keşif - 14:00'],
+    '2025-07-24': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
     '2025-08-05': ['Uzlaştırma görüşmesi - 10:30'],
     '2025-08-15': ['Temyiz inceleme - 09:00'],
     '2025-08-24': ['Müvekkil randevusu - 16:00'],
