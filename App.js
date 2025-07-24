@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Home from './screen/Home';
 import NotesAndReminders from './screen/NotesAndReminders';
 import CaseManagement from './screen/CaseManagement';
@@ -18,7 +19,6 @@ import Profile from './screen/Profile';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// CaseManagement Stack Navigator
 function CaseStack() {
   return (
     <Stack.Navigator>
@@ -51,7 +51,7 @@ function CaseStack() {
   );
 }
 
-// DilekceModulu Stack Navigator
+
 function DilekceStack() {
   return (
     <Stack.Navigator>
@@ -140,7 +140,7 @@ function MyTabs({ onLogout }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Uygulama ilk açıldığında authentication durumunu kontrol et
+ 
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -163,12 +163,10 @@ function MyTabs({ onLogout }) {
     }
   };
 
-  // Login başarılı olduktan sonra çağrılacak fonksiyon
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
 
-  // Logout fonksiyonu
   const handleLogout = async () => {
     try {
       await AsyncStorage.multiRemove(['userToken', 'isLoggedIn', 'userEmail', 'userName']);
@@ -178,23 +176,26 @@ function MyTabs({ onLogout }) {
     }
   };
 
-  // Loading durumu
+  
   if (isLoading) {
-    return null; // Veya loading screen component'i
+    return null; 
   }
 
-  // Authentication durumuna göre component render et
   if (!isAuthenticated) {
     return (
-      <NavigationContainer>
-        <LoginRegister onLoginSuccess={handleLoginSuccess} />
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <LoginRegister onLoginSuccess={handleLoginSuccess} />
+        </NavigationContainer>
+      </SafeAreaProvider>
     );
   }
 
   return (
-    <NavigationContainer>
-      <MyTabs onLogout={handleLogout} />
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <MyTabs onLogout={handleLogout} />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

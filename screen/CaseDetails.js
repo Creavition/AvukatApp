@@ -15,26 +15,22 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getDurumHexRengi } from '../data/DavaData';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function CaseDetails({ route, navigation }) {
-    // Route'dan gelen dava bilgileri
     const { dava } = route.params;
 
-    // State tanımlamaları
     const [activeTab, setActiveTab] = useState('genel');
 
-    // Notlar için state'ler
     const [notlar, setNotlar] = useState([]);
     const [yeniNot, setYeniNot] = useState('');
     const [notEkleniyor, setNotEkleniyor] = useState(false);
 
-    // İletişim sekmesine tıklandığında doğrudan İletişim modülünü aç
     useEffect(() => {
         if (activeTab === 'iletisim') {
             navigation.navigate('IletisimModulu', { dava });
-            // Tab'ı geri genel'e döndür ki bir sonraki açılışta sorun olmasın
             setActiveTab('genel');
         }
     }, [activeTab, navigation, dava]);
@@ -60,7 +56,7 @@ export default function CaseDetails({ route, navigation }) {
     const [uploading, setUploading] = useState(false);
     const [showUploadModal, setShowUploadModal] = useState(false);
 
-    // Duruşma safhaları timeline verisi
+
     const [durusmaSafhalari] = useState([
         {
             time: '15.01.2025',
@@ -106,7 +102,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     ]);
 
-    // Duruşma bilgileri
     const [durusmaBilgileri] = useState({
         tarih: '15.03.2025',
         saat: '09:30',
@@ -117,7 +112,6 @@ export default function CaseDetails({ route, navigation }) {
         kalanGun: 21
     });
 
-    // Notları yükleme fonksiyonu
     useEffect(() => {
         loadNotlar();
     }, []);
@@ -281,14 +275,6 @@ export default function CaseDetails({ route, navigation }) {
                 item.id === id ? { ...item, tamamlandi: !item.tamamlandi } : item
             )
         );
-    };
-
-    // İtiraz süresi rengi hesaplama
-    const getItirazRengi = (kalanGun) => {
-        if (kalanGun >= 15) return '#4CAF50';
-        if (kalanGun >= 7) return '#FF9800';
-        if (kalanGun >= 3) return '#FF5722';
-        return '#F44336';
     };
 
     // Dosya türü ikonu getirme
@@ -492,25 +478,14 @@ export default function CaseDetails({ route, navigation }) {
                                     <MaterialIcons
                                         name="warning"
                                         size={20}
-                                        color={getItirazRengi(dava.itirazSuresi.kalanGun)}
+                                        color={getDurumHexRengi(dava.itirazSuresi.kalanGun)}
                                     />
                                     <Text style={[
                                         styles.itirazText,
-                                        { color: getItirazRengi(dava.itirazSuresi.kalanGun) }
+                                        { color: getDurumHexRengi(dava.itirazSuresi.kalanGun) }
                                     ]}>
                                         {dava.itirazSuresi.kalanGun} gün kaldı
                                     </Text>
-                                </View>
-                                <View style={styles.progressBar}>
-                                    <View
-                                        style={[
-                                            styles.progressFill,
-                                            {
-                                                width: `${dava.itirazSuresi.yuzde}%`,
-                                                backgroundColor: getItirazRengi(dava.itirazSuresi.kalanGun)
-                                            }
-                                        ]}
-                                    />
                                 </View>
                                 <Text style={styles.progressText}>
                                     Son tarih: {dava.itirazSuresi.sonTarih}
@@ -730,10 +705,6 @@ export default function CaseDetails({ route, navigation }) {
                             <View style={styles.statItem}>
                                 <Text style={styles.statNumber}>2</Text>
                                 <Text style={styles.statLabel}>Tamamlanan</Text>
-                            </View>
-                            <View style={styles.statItem}>
-                                <Text style={styles.statNumber}>67%</Text>
-                                <Text style={styles.statLabel}>İlerleme</Text>
                             </View>
                         </View>
                     </View>
@@ -1038,18 +1009,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginLeft: 8,
-    },
-    progressBar: {
-        width: '100%',
-        height: 8,
-        backgroundColor: '#e0e0e0',
-        borderRadius: 4,
-        overflow: 'hidden',
-        marginBottom: 5,
-    },
-    progressFill: {
-        height: '100%',
-        borderRadius: 4,
     },
     progressText: {
         fontSize: 12,

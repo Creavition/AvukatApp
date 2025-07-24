@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Dimens
 import { Ionicons, Entypo, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import Calendar from '../components/Calendar';
 import Timeline from '../components/Timeline';
-import { deadlines, events } from "../data/Data"
+import { deadlines, events } from "../data/DavaData"
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -64,34 +64,39 @@ export default function Home() {
                 {/* Hızlı İşlemler */}
                 <View style={styles.quickActionsContainer}>
                     <View style={styles.quickActionsHeader}>
-                        <Ionicons name="flash" size={24} color="black" />
+                        <Ionicons name="flash" size={24} color="#2196F3" />
                         <Text style={styles.quickActionsTitle}>Hızlı İşlemler</Text>
                     </View>
 
-                    <View style={styles.quickActionsList}>
-                        <TouchableOpacity style={styles.quickActionItem}>
-                            <Entypo name="plus" size={24} color="black" />
-                            <Text style={styles.quickActionText}>Yeni Dava Ekle</Text>
+                    <View style={styles.quickActionsGrid}>
+                        <TouchableOpacity style={[styles.quickActionItem, { backgroundColor: '#E3F2FD' }]}>
+                            <View style={[styles.iconContainer, { backgroundColor: '#2196F3' }]}>
+                                <Entypo name="plus" size={22} color="white" />
+                            </View>
+                            <Text style={styles.quickActionText} numberOfLines={1}>Yeni Dava</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.quickActionItem}>
-                            <AntDesign name="addfile" size={24} color="black" />
-                            <Text style={styles.quickActionText}>Dosya Yükle</Text>
+                        <TouchableOpacity style={[styles.quickActionItem, { backgroundColor: '#E8F5E8' }]}>
+                            <View style={[styles.iconContainer, { backgroundColor: '#4CAF50' }]}>
+                                <AntDesign name="addfile" size={22} color="white" />
+                            </View>
+                            <Text style={styles.quickActionText} numberOfLines={1}>Dosya Yükle</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.quickActionItem, { backgroundColor: '#FFF3E0' }]}>
+                            <View style={[styles.iconContainer, { backgroundColor: '#FF9800' }]}>
+                                <MaterialIcons name="note-add" size={22} color="white" />
+                            </View>
+                            <Text style={styles.quickActionText} numberOfLines={1}>Not Al</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.quickActionItem, { backgroundColor: '#FCE4EC' }]}>
+                            <View style={[styles.iconContainer, { backgroundColor: '#E91E63' }]}>
+                                <AntDesign name="star" size={22} color="white" />
+                            </View>
+                            <Text style={styles.quickActionText} numberOfLines={1}>Favoriler</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.quickActionsList}>
-                        <TouchableOpacity style={styles.quickActionItem}>
-                            <MaterialIcons name="note-add" size={24} color="black" />
-                            <Text style={styles.quickActionText}>Not Al</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.quickActionItem}>
-                            <AntDesign name="star" size={24} color="black" />
-                            <Text style={styles.quickActionText}>Favori Davalar</Text>
-                        </TouchableOpacity>
-                    </View>
-
-
                 </View>
                 {/* İtiraz Süreleri Timeline */}
                 <Timeline deadlines={deadlines} />
@@ -183,8 +188,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: screenWidth * 0.04,
         marginBottom: screenWidth * 0.03,
+        borderWidth: 1,
         borderLeftWidth: 4,
-        borderLeftColor: '#4CAF50',
+        borderLeftColor: 'blue',
     },
     todayHeader: {
         flexDirection: 'row',
@@ -229,46 +235,63 @@ const styles = StyleSheet.create({
         maxWidth: 400,
         alignSelf: 'flex-start',
         marginTop: screenWidth * 0.05,
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        padding: screenWidth * 0.04,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     quickActionsHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: screenWidth * 0.04,
+        paddingBottom: screenWidth * 0.03,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
     },
     quickActionsTitle: {
-        fontSize: screenWidth * 0.04,
+        fontSize: screenWidth * 0.045,
         fontWeight: 'bold',
         marginLeft: screenWidth * 0.02,
         color: '#333',
     },
-    quickActionsList: {
-        justifyContent: "space-between",
-        flexDirection: "row",
-        width: '100%',
+    quickActionsGrid: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     quickActionItem: {
-        flexDirection: 'row',
+        width: '25%',
         alignItems: 'center',
-        backgroundColor: '#d3e0eeff',
-        marginRight: screenWidth * 0.02,
-        padding: screenWidth * 0.035,
-        width: screenWidth * 0.42,
-        marginBottom: screenWidth * 0.025,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderLeftWidth: 4,
-        borderLeftColor: '#2196F3',
-        elevation: 1,
+        padding: screenWidth * 0.025,
+        marginBottom: screenWidth * 0.02,
+        borderRadius: 12,
+        elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
+        minHeight: screenWidth * 0.22,
+        justifyContent: 'center',
+    },
+    iconContainer: {
+        width: screenWidth * 0.12,
+        height: screenWidth * 0.12,
+        borderRadius: screenWidth * 0.06,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: screenWidth * 0.01,
     },
     quickActionText: {
-        fontSize: screenWidth * 0.032,
-        fontWeight: '500',
-        marginLeft: screenWidth * 0.02,
+        fontSize: screenWidth * 0.027,
+        fontWeight: '600',
         color: '#333',
+        textAlign: 'center',
+        lineHeight: screenWidth * 0.032,
+        numberOfLines: 1,
         flexShrink: 1,
     },
 });

@@ -119,7 +119,6 @@ const Profile = ({ onLogout }) => {
                     </View>
                     <Text style={styles.userName}>{userInfo.name}</Text>
                     <Text style={styles.userEmail}>{userInfo.email}</Text>
-                    <Text style={styles.loginDate}>Son giriş: {userInfo.loginDate}</Text>
                 </View>
             </LinearGradient>
 

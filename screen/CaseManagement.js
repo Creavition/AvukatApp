@@ -14,272 +14,10 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { events } from "../data/Data";
+import { events, davaListesi, searchDavalar, filterByDurum, sortByItirazSuresi, getDurumHexRengi } from "../data/DavaData";
 import Calendar from '../components/Calendar';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-const davaListesi = [
-  {
-    id: 1,
-    davaNo: "2024/123",
-    durum: "acil",
-    durumRenk: "🔴",
-    muvekkil: {
-      ad: "Ahmet",
-      soyad: "Yılmaz",
-      telefon: "+90 532 123 45 67",
-      email: "batuhancicekli@gmail.com",
-      adres: "Kadıköy Mah. Bağdat Cad. No:123 Kadıköy/İstanbul",
-      whatsapp: "+90 532 123 45 67"
-    },
-    karsiTaraf: {
-      ad: "Serkan",
-      soyad: "Özkan",
-      telefon: "+90 555 111 22 33",
-      email: "serkan.ozkan@hotmail.com",
-      adres: "Beşiktaş Mah. Nişantaşı Cad. No:45 Beşiktaş/İstanbul",
-      whatsapp: "+90 555 111 22 33"
-    },
-    taniklar: [
-      {
-        ad: "Dr. Murat",
-        soyad: "Kıral",
-        telefon: "+90 533 444 55 66",
-        email: "dr.murat@klinik.com",
-        adres: "Levent Mah. Maya Cad. No:78 Beşiktaş/İstanbul",
-        whatsapp: "+90 533 444 55 66"
-      }
-    ],
-    mahkeme: {
-      ad: "İstanbul 2. Asliye",
-      il: "İstanbul",
-      adres: "Çağlayan Adalet Sarayı, Kağıthane/İstanbul"
-    },
-    davaTuru: "İcra",
-    durusmaTarihi: "2025-07-25T14:30:00",
-    durusmaFormatli: "25.07.2025 14:30",
-    itirazSuresi: {
-      kalanGun: 5,
-      sonTarih: "2025-07-30",
-      yuzde: 75
-    },
-    aciklama: "İcra takip dosyası - Borç: 125.000 TL",
-    dosyaSayisi: 8,
-    sonIslem: "2025-07-20T10:15:00"
-  },
-  {
-    id: 2,
-    davaNo: "2024/124",
-    durum: "beklemede",
-    durumRenk: "🟡",
-    muvekkil: {
-      ad: "Fatma",
-      soyad: "Demir",
-      telefon: "+90 533 987 65 43",
-      email: "fatma.demir@outlook.com",
-      adres: "Çankaya Mah. Atatürk Bulv. No:89 Çankaya/Ankara",
-      whatsapp: "+90 533 987 65 43"
-    },
-    karsiTaraf: {
-      ad: "Hakan",
-      soyad: "Demir",
-      telefon: "+90 544 222 33 44",
-      email: "hakan.demir@gmail.com",
-      adres: "Kızılay Mah. İnönü Cad. No:156 Çankaya/Ankara",
-      whatsapp: "+90 544 222 33 44"
-    },
-    taniklar: [
-      {
-        ad: "Zeynep",
-        soyad: "Arslan",
-        telefon: "+90 535 333 44 55",
-        email: "zeynep.arslan@hotmail.com",
-        adres: "Bahçelievler Mah. 7. Cad. No:23 Çankaya/Ankara",
-        whatsapp: "+90 535 333 44 55"
-      }
-    ],
-    mahkeme: {
-      ad: "Ankara 1. Aile",
-      il: "Ankara",
-      adres: "Ankara Adalet Sarayı, Çankaya/Ankara"
-    },
-    davaTuru: "Boşanma",
-    durusmaTarihi: "2025-08-15T09:00:00",
-    durusmaFormatli: "15.08.2025 09:00",
-    itirazSuresi: {
-      kalanGun: 12,
-      sonTarih: "2025-08-05",
-      yuzde: 45
-    },
-    aciklama: "Anlaşmalı boşanma davası",
-    dosyaSayisi: 15,
-    sonIslem: "2025-07-18T14:22:00"
-  },
-  {
-    id: 3,
-    davaNo: "2024/125",
-    durum: "normal",
-    durumRenk: "🟢",
-    muvekkil: {
-      ad: "Mehmet",
-      soyad: "Kaya",
-      telefon: "+90 534 555 44 33",
-      email: "mehmet.kaya@gmail.com",
-      adres: "Konak Mah. Cumhuriyet Bulv. No:45 Konak/İzmir",
-      whatsapp: "+90 534 555 44 33"
-    },
-    karsiTaraf: {
-      ad: "ABC Şirketi",
-      soyad: "Ltd. Şti.",
-      telefon: "+90 232 444 55 66",
-      email: "info@abcfirma.com",
-      adres: "Alsancak Mah. İş Merkezi Bulv. No:123 Konak/İzmir",
-      whatsapp: "+90 232 444 55 66"
-    },
-    taniklar: [
-      {
-        ad: "Av. Elif",
-        soyad: "Yıldız",
-        telefon: "+90 536 777 88 99",
-        email: "elif.yildiz@barosu.org.tr",
-        adres: "Bornova Mah. Hukuk Cad. No:67 Bornova/İzmir",
-        whatsapp: "+90 536 777 88 99"
-      }
-    ],
-    mahkeme: {
-      ad: "İzmir 3. Ticaret",
-      il: "İzmir",
-      adres: "İzmir Adalet Sarayı, Bayraklı/İzmir"
-    },
-    davaTuru: "Ticari Alacak",
-    durusmaTarihi: "2025-09-10T11:30:00",
-    durusmaFormatli: "10.09.2025 11:30",
-    itirazSuresi: {
-      kalanGun: 25,
-      sonTarih: "2025-08-20",
-      yuzde: 20
-    },
-    aciklama: "Sözleşme ihlali - Alacak: 85.000 TL",
-    dosyaSayisi: 12,
-    sonIslem: "2025-07-15T16:45:00"
-  },
-  {
-    id: 4,
-    davaNo: "2024/126",
-    durum: "acil",
-    durumRenk: "🔴",
-    muvekkil: {
-      ad: "Ayşe",
-      soyad: "Öztürk",
-      telefon: "+90 535 777 88 99",
-      email: "ayse.ozturk@gmail.com",
-      adres: "Osmangazi Mah. Zafer Cad. No:234 Osmangazi/Bursa",
-      whatsapp: "+90 535 777 88 99"
-    },
-    karsiTaraf: {
-      ad: "Emre",
-      soyad: "Güneş",
-      telefon: "+90 543 888 99 00",
-      email: "emre.gunes@hotmail.com",
-      adres: "Nilüfer Mah. Akpınar Cad. No:78 Nilüfer/Bursa",
-      whatsapp: "+90 543 888 99 00"
-    },
-    taniklar: [
-      {
-        ad: "Polis Memuru",
-        soyad: "Can Yılmaz",
-        telefon: "+90 534 111 22 33",
-        email: "can.yilmaz@emniyet.gov.tr",
-        adres: "Bursa Emniyet Müdürlüğü, Osmangazi/Bursa",
-        whatsapp: "+90 534 111 22 33"
-      }
-    ],
-    mahkeme: {
-      ad: "Bursa 2. Asliye Hukuk",
-      il: "Bursa",
-      adres: "Bursa Adalet Sarayı, Osmangazi/Bursa"
-    },
-    davaTuru: "Tazminat",
-    durusmaTarihi: "2025-07-28T10:00:00",
-    durusmaFormatli: "28.07.2025 10:00",
-    itirazSuresi: {
-      kalanGun: 2,
-      sonTarih: "2025-07-24",
-      yuzde: 90
-    },
-    aciklama: "Trafik kazası tazminat davası",
-    dosyaSayisi: 6,
-    sonIslem: "2025-07-22T09:30:00"
-  },
-  {
-    id: 5,
-    davaNo: "2024/127",
-    durum: "beklemede",
-    durumRenk: "🟡",
-    muvekkil: {
-      ad: "Osman",
-      soyad: "Şahin",
-      telefon: "+90 536 222 33 44",
-      email: "osman.sahin@outlook.com",
-      adres: "Muratpaşa Mah. Liman Cad. No:67 Muratpaşa/Antalya",
-      whatsapp: "+90 536 222 33 44"
-    },
-    karsiTaraf: {
-      ad: "XYZ İnşaat",
-      soyad: "A.Ş.",
-      telefon: "+90 242 333 44 55",
-      email: "ik@xyzinsaat.com.tr",
-      adres: "Kepez Mah. Sanayi Sitesi No:89 Kepez/Antalya",
-      whatsapp: "+90 242 333 44 55"
-    },
-    taniklar: [
-      {
-        ad: "Ahmet",
-        soyad: "Çelik",
-        telefon: "+90 537 555 66 77",
-        email: "ahmet.celik@gmail.com",
-        adres: "Konyaaltı Mah. Sahil Cad. No:123 Konyaaltı/Antalya",
-        whatsapp: "+90 537 555 66 77"
-      }
-    ],
-    mahkeme: {
-      ad: "Antalya 1. İş",
-      il: "Antalya",
-      adres: "Antalya Adalet Sarayı, Muratpaşa/Antalya"
-    },
-    davaTuru: "İş Davası",
-    durusmaTarihi: "2025-08-20T14:00:00",
-    durusmaFormatli: "20.08.2025 14:00",
-    itirazSuresi: {
-      kalanGun: 8,
-      sonTarih: "2025-07-30",
-      yuzde: 65
-    },
-    aciklama: "İşçi alacakları davası",
-    dosyaSayisi: 9,
-    sonIslem: "2025-07-19T11:20:00"
-  }
-];
-
-
-const searchDavalar = (davalar, searchTerm) => {
-  return davalar.filter(dava =>
-    dava.davaNo.includes(searchTerm) ||
-    `${dava.muvekkil.ad} ${dava.muvekkil.soyad}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dava.mahkeme.ad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dava.davaTuru.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-};
-
-const sortByItirazSuresi = (davalar) => {
-  return [...davalar].sort((a, b) => a.itirazSuresi.kalanGun - b.itirazSuresi.kalanGun);
-};
-
-
-const filterByDurum = (davalar, durum) => {
-  return davalar.filter(dava => dava.durum === durum);
-};
 
 export default function CaseManagement({ navigation }) {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -304,11 +42,16 @@ export default function CaseManagement({ navigation }) {
     setFiltrelenmisListe(sonuc);
   }, [searchText, selectedFilter]);
 
-  const getItirazRengi = (kalanGun) => {
-    if (kalanGun >= 15) return '#4CAF50'; // Yeşil
-    if (kalanGun >= 7) return '#FF9800';  // Turuncu
-    if (kalanGun >= 3) return '#FF5722';  // Koyu turuncu
-    return '#F44336'; // Kırmızı
+  // Duruşma tarihini formatla
+  const formatDurusma = (tarih) => {
+    const date = new Date(tarih);
+    return date.toLocaleDateString('tr-TR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   // Google Maps'te mahkeme konumunu açma fonksiyonu
@@ -410,6 +153,8 @@ export default function CaseManagement({ navigation }) {
 
   // Dava kartı render fonksiyonu
   const renderDavaKart = ({ item }) => {
+    const durumRengi = getDurumHexRengi(item.itirazSuresi.kalanGun);
+
     return (
       <TouchableOpacity
         style={styles.davaKart}
@@ -419,8 +164,8 @@ export default function CaseManagement({ navigation }) {
         {/* Üst kısım - Dava No ve Mahkeme */}
         <View style={styles.kartUst}>
           <View style={styles.davaNoContainer}>
-            <Text style={styles.durumIcon}>{item.durumRenk}</Text>
-            <Text style={styles.davaNo}>Dava No: {item.davaNo}</Text>
+            <Text style={[styles.durumIcon, { color: durumRengi }]}>{item.durumRenk}</Text>
+            <Text style={[styles.davaNo, { color: durumRengi }]}>Dava No: {item.davaNo}</Text>
           </View>
           <View style={styles.mahkemeContainer}>
             <Ionicons name="location-outline" size={16} color="#666" />
@@ -440,7 +185,7 @@ export default function CaseManagement({ navigation }) {
         <View style={styles.kartAlt}>
           <View style={styles.durusmaContainer}>
             <Text style={styles.durusmaLabel}>Duruşma:</Text>
-            <Text style={styles.durusmaTarihi}>{item.durusmaFormatli}</Text>
+            <Text style={styles.durusmaTarihi}>{formatDurusma(item.durusmaTarihi)}</Text>
             <TouchableOpacity
               style={styles.iconButton}
               onPress={(e) => {
@@ -466,26 +211,14 @@ export default function CaseManagement({ navigation }) {
             <View style={styles.itirazInfo}>
               <Text style={[
                 styles.itirazText,
-                { color: getItirazRengi(item.itirazSuresi.kalanGun) }
+                { color: durumRengi }
               ]}>
                 İtiraz Süresi: {item.itirazSuresi.kalanGun} gün kaldı
               </Text>
               <MaterialIcons
                 name="warning"
                 size={16}
-                color={getItirazRengi(item.itirazSuresi.kalanGun)}
-              />
-            </View>
-            {/* Progress bar */}
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${item.itirazSuresi.yuzde}%`,
-                    backgroundColor: getItirazRengi(item.itirazSuresi.kalanGun)
-                  }
-                ]}
+                color={durumRengi}
               />
             </View>
           </View>
@@ -499,9 +232,10 @@ export default function CaseManagement({ navigation }) {
   };
 
   const takvimiEkle = (dava) => {
+    const formattedDate = formatDurusma(dava.durusmaTarihi);
     Alert.alert(
       'Takvime Ekle',
-      `${dava.durusmaFormatli} tarihli duruşma takvime eklensin mi?`,
+      `${formattedDate} tarihli duruşma takvime eklensin mi?`,
       [
         { text: 'İptal', style: 'cancel' },
         { text: 'Ekle', onPress: () => console.log('Takvime eklendi') }
@@ -514,7 +248,7 @@ export default function CaseManagement({ navigation }) {
     const filters = [
       { key: 'tumu', label: 'Tümü', count: davaListesi.length },
       { key: 'acil', label: 'Acil', count: davaListesi.filter(d => d.durum === 'acil').length },
-      { key: 'beklemede', label: 'Beklemede', count: davaListesi.filter(d => d.durum === 'beklemede').length },
+      { key: 'yaklaşıyor', label: 'Yaklaşıyor', count: davaListesi.filter(d => d.durum === 'yaklaşıyor').length },
       { key: 'normal', label: 'Normal', count: davaListesi.filter(d => d.durum === 'normal').length }
     ];
 
@@ -713,7 +447,7 @@ const styles = StyleSheet.create({
     borderColor: '#DEE2E6',
     alignItems: 'center',
     justifyContent: 'center',
-    height: screenHeight * 0.04, // Daha küçük yükseklik
+    height: screenHeight * 0.04,
   },
   filterBtnActive: {
     backgroundColor: '#2196F3',
@@ -838,16 +572,6 @@ const styles = StyleSheet.create({
   itirazText: {
     fontSize: screenWidth * 0.032,
     fontWeight: '500',
-  },
-  progressBar: {
-    height: screenHeight * 0.005,
-    backgroundColor: '#e0e0e0',
-    borderRadius: screenWidth * 0.005,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: screenWidth * 0.005,
   },
   separator: {
     height: screenHeight * 0.015,

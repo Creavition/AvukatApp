@@ -17,8 +17,6 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
 const LoginRegister = ({ navigation, onLoginSuccess }) => {
     const [currentScreen, setCurrentScreen] = useState('login');
     const [loading, setLoading] = useState(false);
@@ -49,15 +47,31 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         setLoading(true);
 
         try {
-            // Simulated login - gerçek uygulamada API çağrısı olur
+            // Kayıtlı kullanıcıları kontrol et
+            const registeredUsers = await AsyncStorage.getItem('registeredUsers');
+            const users = registeredUsers ? JSON.parse(registeredUsers) : [];
+
+            // Kullanıcı kayıtlı mı kontrol et
+            const user = users.find(u =>
+                u.email.toLowerCase() === loginData.email.toLowerCase() &&
+                u.password === loginData.password
+            );
+
+            if (!user) {
+                Alert.alert('Hata', 'E-posta veya şifre hatalı! Lütfen kayıt olun.');
+                setLoading(false);
+                return;
+            }
+
+            // Simulated login delay
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             // Başarılı giriş - AsyncStorage'a kaydet
             await AsyncStorage.multiSet([
                 ['userToken', 'dummy_token_' + Date.now()],
                 ['isLoggedIn', 'true'],
-                ['userEmail', loginData.email],
-                ['userName', loginData.email.split('@')[0]]
+                ['userEmail', user.email],
+                ['userName', user.fullName]
             ]);
 
             // Direk home sayfasına yönlendir
@@ -93,7 +107,35 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         setLoading(true);
 
         try {
-            // Simulated registration - gerçek uygulamada API çağrısı olur
+            // Mevcut kullanıcıları kontrol et
+            const registeredUsers = await AsyncStorage.getItem('registeredUsers');
+            const users = registeredUsers ? JSON.parse(registeredUsers) : [];
+
+            // E-posta zaten kayıtlı mı kontrol et
+            const existingUser = users.find(u =>
+                u.email.toLowerCase() === registerData.email.toLowerCase()
+            );
+
+            if (existingUser) {
+                Alert.alert('Hata', 'Bu e-posta adresi zaten kayıtlı!');
+                setLoading(false);
+                return;
+            }
+
+            // Yeni kullanıcıyı ekle
+            const newUser = {
+                id: Date.now().toString(),
+                fullName: registerData.fullName,
+                email: registerData.email,
+                password: registerData.password,
+                phone: registerData.phone,
+                registeredAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            await AsyncStorage.setItem('registeredUsers', JSON.stringify(users));
+
+            // Simulated registration delay
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             // Başarılı kayıt sonrası login sayfasına yönlendir
@@ -142,7 +184,7 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                     <View style={styles.header}>
                         <View style={styles.logoContainer}>
                             <MaterialIcons name="gavel" size={60} color="#FFFFFF" />
-                            <Text style={styles.appTitle}>HukukApp</Text>
+
                             <Text style={styles.appSubtitle}>Hukuki İşlemleriniz Güvende</Text>
                         </View>
                     </View>
@@ -246,7 +288,6 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                     <View style={styles.header}>
                         <View style={styles.logoContainer}>
                             <MaterialIcons name="person-add" size={60} color="#FFFFFF" />
-                            <Text style={styles.appTitle}>HukukApp</Text>
                             <Text style={styles.appSubtitle}>Hesap Oluşturun</Text>
                         </View>
                     </View>

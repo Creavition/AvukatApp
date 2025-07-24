@@ -14,136 +14,10 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import RNPrint from 'react-native-print';
+import { dilekceKategorileri } from '../data/DilekceData';
 
 // Responsive boyutlandırma için
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-// Dilekçe şablonları veri yapısı
-const dilekceKategorileri = [
-    {
-        id: 1,
-        baslik: "Dava Dilekçeleri",
-        ikon: "gavel",
-        renk: "#2196F3",
-        sablonlar: [
-            {
-                id: 11,
-                baslik: "Boşanma Davası Dilekçesi",
-                aciklama: "Anlaşmalı/çekişmeli boşanma davası için",
-                sablon: `{{mahkeme_adi}}'ne
-
-DAVA DİLEKÇESİ
-
-Davacı    : {{davaci_ad_soyad}}
-           {{davaci_adres}}
-           T.C. Kimlik No: {{davaci_tc}}
-
-Davalı    : {{davali_ad_soyad}}
-           {{davali_adres}}
-           T.C. Kimlik No: {{davali_tc}}
-
-Vekili    : {{avukat_ad_soyad}}
-           {{avukat_adres}}
-           Baro Sicil No: {{baro_sicil}}
-
-KONU     : BOŞANMA DAVASI
-
-AÇIKLAMALAR:
-Davacı ile davalı {{evlilik_tarihi}} tarihinde {{evlilik_yeri}}'nde evlenmişlerdir. 
-
-{{cocuk_durumu}}
-
-Taraflar arasında {{ayrilik_tarihi}} tarihinden itibaren fiili ayrılık başlamış olup, evlilik birliği temelinden sarsılmıştır.
-
-HUKUKİ SEBEPLER:
-Türk Medeni Kanunu'nun 166. maddesi gereğince...
-
-TALEP:
-Bu nedenlerle, tarafların boşanmalarına karar verilmesini talep ederim.
-
-Tarih: {{tarih}}
-                                          {{avukat_ad_soyad}}
-                                            Avukat`
-            },
-            {
-                id: 12,
-                baslik: "Alacak Davası Dilekçesi",
-                aciklama: "Sözleşmeli alacak davası için",
-                sablon: `{{mahkeme_adi}}'ne
-
-DAVA DİLEKÇESİ
-
-Davacı    : {{davaci_ad_soyad}}
-           {{davaci_adres}}
-           T.C. Kimlik No: {{davaci_tc}}
-
-Davalı    : {{davali_ad_soyad}}
-           {{davali_adres}}
-           T.C. Kimlik No: {{davali_tc}}
-
-Vekili    : {{avukat_ad_soyad}}
-           {{avukat_adres}}
-           Baro Sicil No: {{baro_sicil}}
-
-KONU     : ALACAK DAVASI
-
-AÇIKLAMALAR:
-Davacı ile davalı arasında {{sozlesme_tarihi}} tarihinde {{sozlesme_konusu}} konusunda sözleşme yapılmıştır.
-
-Sözleşme gereği davalının {{odeme_tarihi}} tarihinde {{alacak_miktari}} TL ödeme yapması gerekirken, yapılmamıştır.
-
-HUKUKİ SEBEPLER:
-Türk Borçlar Kanunu'nun 117. maddesi gereğince...
-
-TALEP:
-Bu nedenlerle, davalının davacıya {{alacak_miktari}} TL asıl alacak ile birlikte yasal faiz ve vekalet ücretini ödemesine karar verilmesini talep ederim.
-
-Tarih: {{tarih}}
-                                          {{avukat_ad_soyad}}
-                                            Avukat`
-            }
-        ]
-    },
-    {
-        id: 2,
-        baslik: "Şikayet Dilekçeleri",
-        ikon: "warning",
-        renk: "#FF5722",
-        sablonlar: [
-            {
-                id: 21,
-                baslik: "Savcılığa Şikayet Dilekçesi",
-                aciklama: "Suç duyurusu için genel şablon",
-                sablon: `{{cumhuriyet_savciligi}}'na
-
-SUÇ DUYURUSU DİLEKÇESİ
-
-Şikayetçi : {{sikayetci_ad_soyad}}
-           {{sikayetci_adres}}
-           T.C. Kimlik No: {{sikayetci_tc}}
-           Telefon: {{sikayetci_telefon}}
-
-Şüpheli   : {{supheli_ad_soyad}}
-           {{supheli_adres}}
-           T.C. Kimlik No: {{supheli_tc}}
-
-KONU     : {{suc_turu}} SUÇUNDAN DOLAYI SUÇ DUYURUSU
-
-AÇIKLAMALAR:
-{{olay_tarihi}} tarihinde {{olay_yeri}}'nde meydana gelen olayda şüpheli {{olay_aciklamasi}}
-
-Bu fiil Türk Ceza Kanunu'nun {{madde_no}}. maddesi kapsamında suç teşkil etmektedir.
-
-TALEP:
-Şüpheli hakkında soruşturma açılması ve gerekli yasal işlemin yapılmasını talep ederim.
-
-Tarih: {{tarih}}
-                                          {{sikayetci_ad_soyad}}
-                                             İmza`
-            }
-        ]
-    }
-];
 
 export default function DilekceModulu({ navigation }) {
     const [selectedKategori, setSelectedKategori] = useState(null);
@@ -617,9 +491,7 @@ export default function DilekceModulu({ navigation }) {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
+                <View style={{ width: 24 }} />
                 <Text style={styles.headerTitle}>Dilekçe Şablonları</Text>
                 <TouchableOpacity>
                     <Ionicons name="add-circle-outline" size={24} color="#333" />
