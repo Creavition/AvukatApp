@@ -10,7 +10,8 @@ import {
     Alert,
     Share,
     Platform,
-    Dimensions
+    Dimensions,
+    StatusBar
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import RNPrint from 'react-native-print';
@@ -277,24 +278,6 @@ export default function DilekceModulu({ navigation }) {
         }
     };
 
-    // Print önizleme
-    const previewPrint = async () => {
-        try {
-            const htmlContent = createPrintHTML(
-                editedContent,
-                selectedSablon?.baslik || 'Dilekçe'
-            );
-
-            // Önizleme için basit print
-            await RNPrint.print({
-                html: htmlContent,
-                fileName: 'preview'
-            });
-        } catch (error) {
-            Alert.alert('Hata', 'Önizleme oluşturulamadı.');
-        }
-    };
-
     // Kategori seçme
     const kategoriSec = (kategori) => {
         setSelectedKategori(kategori);
@@ -385,6 +368,7 @@ export default function DilekceModulu({ navigation }) {
     if (showEditor) {
         return (
             <View style={styles.container}>
+                <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
                 {/* Editor Header */}
                 <View style={styles.editorHeader}>
                     <TouchableOpacity onPress={() => setShowEditor(false)}>
@@ -401,20 +385,6 @@ export default function DilekceModulu({ navigation }) {
                     <TouchableOpacity style={styles.toolButton} onPress={sablonuDoldur}>
                         <MaterialIcons name="edit" size={20} color="#2196F3" />
                         <Text style={styles.toolButtonText}>Doldur</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.toolButton}>
-                        <MaterialIcons name="save" size={20} color="#4CAF50" />
-                        <Text style={styles.toolButtonText}>Kaydet</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.toolButton}
-                        onPress={previewPrint}
-                        disabled={isGeneratingPDF}
-                    >
-                        <MaterialIcons name="preview" size={20} color="#FF9800" />
-                        <Text style={styles.toolButtonText}>Önizle</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -437,7 +407,11 @@ export default function DilekceModulu({ navigation }) {
                 </View>
 
                 {/* Text Editor */}
-                <ScrollView style={styles.editorContainer}>
+                <ScrollView
+                    style={styles.editorContainer}
+                    contentContainerStyle={styles.editorContent}
+                    showsVerticalScrollIndicator={false}
+                >
                     <TextInput
                         style={styles.textEditor}
                         multiline
@@ -455,6 +429,7 @@ export default function DilekceModulu({ navigation }) {
     if (selectedKategori) {
         return (
             <View style={styles.container}>
+                <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => setSelectedKategori(null)}>
@@ -481,6 +456,7 @@ export default function DilekceModulu({ navigation }) {
                     renderItem={renderSablon}
                     keyExtractor={(item) => item.id.toString()}
                     style={styles.sablonList}
+                    contentContainerStyle={styles.sablonListContent}
                     showsVerticalScrollIndicator={false}
                 />
             </View>
@@ -489,6 +465,7 @@ export default function DilekceModulu({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
             {/* Header */}
             <View style={styles.header}>
                 <View style={{ width: 24 }} />
@@ -522,6 +499,7 @@ export default function DilekceModulu({ navigation }) {
                 renderItem={renderKategori}
                 keyExtractor={(item) => item.id.toString()}
                 style={styles.kategoriList}
+                contentContainerStyle={styles.kategoriListContent}
                 showsVerticalScrollIndicator={false}
             />
         </View>
@@ -584,6 +562,9 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: screenWidth * 0.05,
     },
+    kategoriListContent: {
+        paddingBottom: Platform.OS === 'android' ? 80 : 70, // Bottom tab navigator için extra padding
+    },
     kategoriKart: {
         backgroundColor: '#fff',
         borderRadius: screenWidth * 0.03,
@@ -631,6 +612,9 @@ const styles = StyleSheet.create({
     sablonList: {
         flex: 1,
         paddingHorizontal: screenWidth * 0.05,
+    },
+    sablonListContent: {
+        paddingBottom: Platform.OS === 'android' ? 80 : 70, // Bottom tab navigator için extra padding
     },
     sablonKart: {
         backgroundColor: '#fff',
@@ -717,6 +701,9 @@ const styles = StyleSheet.create({
     editorContainer: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    editorContent: {
+        paddingBottom: Platform.OS === 'android' ? 80 : 70, // Bottom tab navigator için extra padding
     },
     textEditor: {
         flex: 1,

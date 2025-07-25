@@ -10,7 +10,8 @@ import {
   ScrollView,
   Dimensions,
   Linking,
-  Platform
+  Platform,
+  StatusBar
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -278,6 +279,7 @@ export default function CaseManagement({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
       {/* Arama Çubuğu */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
@@ -438,9 +440,9 @@ const styles = StyleSheet.create({
   },
   filterBtn: {
     flex: 1,
-    marginHorizontal: screenWidth * 0.005,
+    marginHorizontal: screenWidth * 0.003,
     paddingVertical: screenHeight * 0.008,
-    paddingHorizontal: screenWidth * 0.015,
+    paddingHorizontal: screenWidth * 0.01,
     backgroundColor: '#F8F9FA',
     borderRadius: screenWidth * 0.02,
     borderWidth: 1,
@@ -454,7 +456,7 @@ const styles = StyleSheet.create({
     borderColor: '#2196F3',
   },
   filterBtnText: {
-    fontSize: screenWidth * 0.032,
+    fontSize: screenWidth * 0.028,
     color: '#495057',
     fontWeight: '600',
     textAlign: 'center',

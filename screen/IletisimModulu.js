@@ -10,7 +10,10 @@ import {
     FlatList,
     Linking,
     Modal,
-    Dimensions
+    Dimensions,
+    SafeAreaView,
+    Platform,
+    StatusBar
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
@@ -27,6 +30,7 @@ export default function IletisimModulu({ route, navigation }) {
     const [messageText, setMessageText] = useState('');
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [showTemplateModal, setShowTemplateModal] = useState(false);
+    const [showTemplateList, setShowTemplateList] = useState(false);
 
     // Tab değiştiğinde search'i temizle
     const handleTabChange = (tabName) => {
@@ -345,13 +349,19 @@ export default function IletisimModulu({ route, navigation }) {
 
     // Şablon kullanarak mesaj oluştur
     const sablonKullan = (sablon) => {
+        setSelectedTemplate(sablon);
+        setShowTemplateModal(true);
+    };
+
+    // SMS modalında şablon kullan
+    const smsIcinSablonKullan = (sablon) => {
         let mesaj = sablon.sablon;
         if (selectedPerson) {
             mesaj = mesaj.replace(/{{ad}}/g, selectedPerson.ad);
             mesaj = mesaj.replace(/{{soyad}}/g, selectedPerson.soyad);
         }
         setMessageText(mesaj);
-        setShowTemplateModal(false);
+        setShowTemplateList(false);
     };
 
     // Mesaj gönder
@@ -488,6 +498,21 @@ export default function IletisimModulu({ route, navigation }) {
         </TouchableOpacity>
     );
 
+    // SMS modal için şablon render
+    const renderSmsIcinSablon = ({ item }) => (
+        <TouchableOpacity
+            style={styles.smsModalSablonKarti}
+            onPress={() => smsIcinSablonKullan(item)}
+        >
+            <View style={styles.sablonHeader}>
+                <Text style={styles.smsModalSablonBaslik}>{item.baslik}</Text>
+                <View style={[styles.sablonKategori, { backgroundColor: getSablonRenk(item.kategori) }]}>
+                    <Text style={styles.sablonKategoriText}>{item.kategori}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+
     const getSablonRenk = (kategori) => {
         const renkler = {
             randevu: '#2196F3',
@@ -500,190 +525,227 @@ export default function IletisimModulu({ route, navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => navigation.goBack()}
-                >
-                    <Ionicons name="arrow-back" size={24} color="#333" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>İletişim</Text>
-                <Text style={styles.davaNo}>Dava: {dava.davaNo}</Text>
-            </View>
-
-            {/* Tab Bar */}
-            <View style={styles.tabBar}>
-                <TouchableOpacity
-                    style={[styles.tab, selectedTab === 'kisiler' && styles.activeTab]}
-                    onPress={() => handleTabChange('kisiler')}
-                >
-                    <Ionicons name="people" size={20} color={selectedTab === 'kisiler' ? '#2196F3' : '#666'} />
-                    <Text style={[styles.tabText, selectedTab === 'kisiler' && styles.activeTabText]}>
-                        Kişiler
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[styles.tab, selectedTab === 'gecmis' && styles.activeTab]}
-                    onPress={() => handleTabChange('gecmis')}
-                >
-                    <Ionicons name="time" size={20} color={selectedTab === 'gecmis' ? '#2196F3' : '#666'} />
-                    <Text style={[styles.tabText, selectedTab === 'gecmis' && styles.activeTabText]}>
-                        Geçmiş
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[styles.tab, selectedTab === 'sablonlar' && styles.activeTab]}
-                    onPress={() => handleTabChange('sablonlar')}
-                >
-                    <Ionicons name="document-text" size={20} color={selectedTab === 'sablonlar' ? '#2196F3' : '#666'} />
-                    <Text style={[styles.tabText, selectedTab === 'sablonlar' && styles.activeTabText]}>
-                        Şablonlar
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Arama Çubuğu */}
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color="#666" />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder={
-                        selectedTab === 'kisiler' ? 'Kişi veya rol ara...' :
-                            selectedTab === 'gecmis' ? 'Geçmiş kayıtlarda ara...' :
-                                selectedTab === 'sablonlar' ? 'Şablon ara...' : 'Ara...'
-                    }
-                    value={searchText}
-                    onChangeText={setSearchText}
-                />
-                {searchText.length > 0 && (
-                    <TouchableOpacity onPress={() => setSearchText('')}>
-                        <Ionicons name="close-circle" size={20} color="#666" />
+        <SafeAreaView style={styles.safeArea}>
+            <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="#333" />
                     </TouchableOpacity>
-                )}
-            </View>
-
-            {/* İçerik */}
-            <ScrollView style={styles.content}>
-                {selectedTab === 'kisiler' && (
-                    <FlatList
-                        data={filtrelenmisKisiler}
-                        renderItem={renderKisiKarti}
-                        keyExtractor={(item) => item.id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        scrollEnabled={false}
-                    />
-                )}
-
-                {selectedTab === 'gecmis' && (
-                    <FlatList
-                        data={filtrelenmisGecmis.sort((a, b) => new Date(b.tarih) - new Date(a.tarih))}
-                        renderItem={renderGecmisKayit}
-                        keyExtractor={(item) => item.id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        scrollEnabled={false}
-                    />
-                )}
-
-                {selectedTab === 'sablonlar' && (
-                    <FlatList
-                        data={filtrelenmisSablonlar}
-                        renderItem={renderSablon}
-                        keyExtractor={(item) => item.id.toString()}
-                        showsVerticalScrollIndicator={false}
-                        scrollEnabled={false}
-                    />
-                )}
-            </ScrollView>
-
-            {/* Mesaj Gönderme Modal */}
-            <Modal
-                visible={showMessageModal}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setShowMessageModal(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>
-                                {selectedPerson ? `${selectedPerson.ad} ${selectedPerson.soyad}` : ''} - SMS
-                            </Text>
-                            <TouchableOpacity onPress={() => setShowMessageModal(false)}>
-                                <Ionicons name="close" size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
-
-                        <TouchableOpacity
-                            style={styles.templateButton}
-                            onPress={() => setShowTemplateModal(true)}
-                        >
-                            <Ionicons name="document-text" size={20} color="#2196F3" />
-                            <Text style={styles.templateButtonText}>Şablon Seç</Text>
-                        </TouchableOpacity>
-
-                        <TextInput
-                            style={styles.messageInput}
-                            multiline
-                            numberOfLines={6}
-                            placeholder="Mesajınızı yazın..."
-                            value={messageText}
-                            onChangeText={setMessageText}
-                            textAlignVertical="top"
-                        />
-
-                        <View style={styles.modalButtons}>
-                            <TouchableOpacity
-                                style={styles.cancelButton}
-                                onPress={() => setShowMessageModal(false)}
-                            >
-                                <Text style={styles.cancelButtonText}>İptal</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={styles.sendButton}
-                                onPress={mesajGonder}
-                            >
-                                <Text style={styles.sendButtonText}>Gönder</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <Text style={styles.headerTitle}>İletişim</Text>
+                    <Text style={styles.davaNo}>Dava: {dava.davaNo}</Text>
                 </View>
-            </Modal>
 
-            {/* Şablon Seçme Modal */}
-            <Modal
-                visible={showTemplateModal}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setShowTemplateModal(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Mesaj Şablonu Seç</Text>
-                            <TouchableOpacity onPress={() => setShowTemplateModal(false)}>
-                                <Ionicons name="close" size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
+                {/* Tab Bar */}
+                <View style={styles.tabBar}>
+                    <TouchableOpacity
+                        style={[styles.tab, selectedTab === 'kisiler' && styles.activeTab]}
+                        onPress={() => handleTabChange('kisiler')}
+                    >
+                        <Ionicons name="people" size={20} color={selectedTab === 'kisiler' ? '#2196F3' : '#666'} />
+                        <Text style={[styles.tabText, selectedTab === 'kisiler' && styles.activeTabText]}>
+                            Kişiler
+                        </Text>
+                    </TouchableOpacity>
 
+                    <TouchableOpacity
+                        style={[styles.tab, selectedTab === 'gecmis' && styles.activeTab]}
+                        onPress={() => handleTabChange('gecmis')}
+                    >
+                        <Ionicons name="time" size={20} color={selectedTab === 'gecmis' ? '#2196F3' : '#666'} />
+                        <Text style={[styles.tabText, selectedTab === 'gecmis' && styles.activeTabText]}>
+                            Geçmiş
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.tab, selectedTab === 'sablonlar' && styles.activeTab]}
+                        onPress={() => handleTabChange('sablonlar')}
+                    >
+                        <Ionicons name="document-text" size={20} color={selectedTab === 'sablonlar' ? '#2196F3' : '#666'} />
+                        <Text style={[styles.tabText, selectedTab === 'sablonlar' && styles.activeTabText]}>
+                            Şablonlar
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Arama Çubuğu */}
+                <View style={styles.searchContainer}>
+                    <Ionicons name="search" size={20} color="#666" />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder={
+                            selectedTab === 'kisiler' ? 'Kişi veya rol ara...' :
+                                selectedTab === 'gecmis' ? 'Geçmiş kayıtlarda ara...' :
+                                    selectedTab === 'sablonlar' ? 'Şablon ara...' : 'Ara...'
+                        }
+                        value={searchText}
+                        onChangeText={setSearchText}
+                    />
+                    {searchText.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchText('')}>
+                            <Ionicons name="close-circle" size={20} color="#666" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* İçerik */}
+                <ScrollView style={styles.content}>
+                    {selectedTab === 'kisiler' && (
                         <FlatList
-                            data={mesajSablonlari}
+                            data={filtrelenmisKisiler}
+                            renderItem={renderKisiKarti}
+                            keyExtractor={(item) => item.id.toString()}
+                            showsVerticalScrollIndicator={false}
+                            scrollEnabled={false}
+                        />
+                    )}
+
+                    {selectedTab === 'gecmis' && (
+                        <FlatList
+                            data={filtrelenmisGecmis.sort((a, b) => new Date(b.tarih) - new Date(a.tarih))}
+                            renderItem={renderGecmisKayit}
+                            keyExtractor={(item) => item.id.toString()}
+                            showsVerticalScrollIndicator={false}
+                            scrollEnabled={false}
+                        />
+                    )}
+
+                    {selectedTab === 'sablonlar' && (
+                        <FlatList
+                            data={filtrelenmisSablonlar}
                             renderItem={renderSablon}
                             keyExtractor={(item) => item.id.toString()}
                             showsVerticalScrollIndicator={false}
+                            scrollEnabled={false}
                         />
+                    )}
+                </ScrollView>
+
+                {/* Mesaj Gönderme Modal */}
+                <Modal
+                    visible={showMessageModal}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setShowMessageModal(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>
+                                    {selectedPerson ? `${selectedPerson.ad} ${selectedPerson.soyad}` : ''} - SMS
+                                </Text>
+                                <TouchableOpacity onPress={() => setShowMessageModal(false)}>
+                                    <Ionicons name="close" size={24} color="#333" />
+                                </TouchableOpacity>
+                            </View>
+
+                            <TouchableOpacity
+                                style={styles.templateButton}
+                                onPress={() => setShowTemplateList(!showTemplateList)}
+                            >
+                                <Ionicons name="document-text" size={20} color="#2196F3" />
+                                <Text style={styles.templateButtonText}>
+                                    {showTemplateList ? 'Şablonları Gizle' : 'Şablon Seç'}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {showTemplateList && (
+                                <View style={styles.templateListContainer}>
+                                    <FlatList
+                                        data={mesajSablonlari}
+                                        renderItem={renderSmsIcinSablon}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        showsVerticalScrollIndicator={false}
+                                        nestedScrollEnabled={true}
+                                        style={styles.templateList}
+                                    />
+                                </View>
+                            )}
+
+                            {!showTemplateList && (
+                                <>
+                                    <TextInput
+                                        style={styles.messageInput}
+                                        multiline
+                                        numberOfLines={6}
+                                        placeholder="Mesajınızı yazın..."
+                                        value={messageText}
+                                        onChangeText={setMessageText}
+                                        textAlignVertical="top"
+                                    />
+
+                                    <View style={styles.modalButtons}>
+                                        <TouchableOpacity
+                                            style={styles.cancelButton}
+                                            onPress={() => setShowMessageModal(false)}
+                                        >
+                                            <Text style={styles.cancelButtonText}>İptal</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style={styles.sendButton}
+                                            onPress={mesajGonder}
+                                        >
+                                            <Text style={styles.sendButtonText}>Gönder</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </>
+                            )}
+                        </View>
                     </View>
-                </View>
-            </Modal>
-        </View>
+                </Modal>
+
+                {/* Şablon Detay Modal */}
+                <Modal
+                    visible={showTemplateModal}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setShowTemplateModal(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>
+                                    {selectedTemplate ? selectedTemplate.baslik : 'Şablon Detayı'}
+                                </Text>
+                                <TouchableOpacity onPress={() => setShowTemplateModal(false)}>
+                                    <Ionicons name="close" size={24} color="#333" />
+                                </TouchableOpacity>
+                            </View>
+
+                            {selectedTemplate && (
+                                <ScrollView style={styles.templateContent}>
+                                    <View style={styles.templateCategory}>
+                                        <Text style={styles.templateCategoryLabel}>Kategori:</Text>
+                                        <View style={[styles.sablonKategori, { backgroundColor: getSablonRenk(selectedTemplate.kategori) }]}>
+                                            <Text style={styles.sablonKategoriText}>{selectedTemplate.kategori}</Text>
+                                        </View>
+                                    </View>
+
+                                    <Text style={styles.templateContentLabel}>İçerik:</Text>
+                                    <Text style={styles.templateText}>{selectedTemplate.sablon}</Text>
+                                </ScrollView>
+                            )}
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        paddingBottom: Platform.OS === 'android' ? 10 : 0,
+    },
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
@@ -694,7 +756,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: screenWidth * 0.05,
         paddingVertical: screenWidth * 0.04,
-        paddingTop: screenWidth * 0.12,
+        paddingTop: screenWidth * 0.04,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
@@ -803,7 +865,7 @@ const styles = StyleSheet.create({
     },
     kisiEmail: {
         fontSize: 13,
-        color: '#FF9800',
+        color: '#2196F3',
         marginTop: 2,
         fontStyle: 'italic',
     },
@@ -971,5 +1033,62 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    templateContent: {
+        maxHeight: 400,
+        marginBottom: 20,
+    },
+    templateCategory: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    templateCategoryLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        marginRight: 10,
+    },
+    templateContentLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 10,
+    },
+    templateText: {
+        fontSize: 14,
+        color: '#666',
+        lineHeight: 20,
+        padding: 12,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+    },
+    templateListContainer: {
+        marginBottom: 15,
+        maxHeight: 200,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        borderRadius: 8,
+        backgroundColor: '#f8f9fa',
+    },
+    templateList: {
+        padding: 10,
+    },
+    smsModalSablonKarti: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 8,
+        elevation: 1,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+    },
+    smsModalSablonBaslik: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#333',
+        flex: 1,
     },
 });

@@ -1,8 +1,8 @@
 
 // Takvim etkinlikleri
 export const events = {
-    '2025-07-22': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30', 'Keşif - 14:00'],
-    '2025-07-24': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
+    '2025-07-25': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
+    '2025-07-30': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
     '2025-08-05': ['Uzlaştırma görüşmesi - 10:30'],
     '2025-08-15': ['Temyiz inceleme - 09:00'],
     '2025-08-24': ['Müvekkil randevusu - 16:00'],
@@ -13,12 +13,11 @@ export const events = {
     '2025-12-25': ['Yıl sonu değerlendirme toplantısı - 15:00']
 };
 
-// Son tarihler ve deadlines
 export const deadlines = [
     {
         id: 1,
         title: 'İstinaf İtiraz Süresi',
-        date: '2025-07-24',
+        date: '2025-07-26',
         caseNumber: '2025/123',
         clientName: 'Ahmet Yılmaz',
         description: 'İlk derece mahkeme kararına karşı istinaf başvurusu için son gün. Gerekli belgeler hazırlandı.'
@@ -26,8 +25,8 @@ export const deadlines = [
     {
         id: 2,
         title: 'Temyiz İtiraz Süresi',
-        date: '2025-07-26',
-        caseNumber: '2024/456',
+        date: '2025-07-27',
+        caseNumber: '2025/456',
         clientName: 'Fatma Kaya',
         description: 'Bölge adliye mahkemesi kararına karşı temyiz başvurusu yapılacak.'
     },
@@ -83,7 +82,7 @@ export const deadlines = [
         id: 9,
         title: 'Tahsilat Takibi',
         date: '2025-09-15',
-        caseNumber: '2024/678',
+        caseNumber: '2025/678',
         clientName: 'Hasan Yıldız',
         description: 'Mahkeme kararının infazı için takip başlatılacak.'
     },
@@ -125,7 +124,6 @@ export const getDurum = (kalanGun) => {
     return "acil";
 };
 
-// Ham dava verileri (durum ve itirazSuresi dinamik olarak hesaplanacak)
 const rawDavaListesi = [
     {
         id: 1,
@@ -164,7 +162,7 @@ const rawDavaListesi = [
         davaTuru: "İcra",
         durusmaTarihi: "2025-07-25T14:30:00",
         itirazSuresiSonTarih: "2025-07-30",
-        aciklama: "İcra takip dosyası - Borç: 125.000 TL",
+        aciklama: "İcra takip dosyası",
         dosyaSayisi: 8,
         sonIslem: "2025-07-20T10:15:00"
     },

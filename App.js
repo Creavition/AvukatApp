@@ -4,9 +4,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, StatusBar } from 'react-native';
 import Home from './screen/Home';
-import NotesAndReminders from './screen/NotesAndReminders';
 import CaseManagement from './screen/CaseManagement';
 import CaseDetails from './screen/CaseDetails';
 import IletisimModulu from './screen/IletisimModulu';
@@ -51,7 +51,6 @@ function CaseStack() {
   );
 }
 
-
 function DilekceStack() {
   return (
     <Stack.Navigator>
@@ -75,6 +74,8 @@ function DilekceStack() {
 }
 
 function MyTabs({ onLogout }) {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -99,8 +100,21 @@ function MyTabs({ onLogout }) {
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
           backgroundColor: 'white',
-          paddingBottom: 5,
-          height: 60
+          paddingBottom: 0,
+          paddingTop: 5,
+          height: Platform.OS === 'android' ? 65 : 60,
+          borderTopWidth: 1,
+          borderTopColor: '#e0e0e0',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          marginBottom: 0,
         },
         headerShown: false
       })}
@@ -136,11 +150,12 @@ function MyTabs({ onLogout }) {
       </Tab.Screen>
     </Tab.Navigator>
   );
-} export default function App() {
+}
+
+export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
- 
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -176,26 +191,30 @@ function MyTabs({ onLogout }) {
     }
   };
 
-  
   if (isLoading) {
-    return null; 
+    return null;
   }
 
   if (!isAuthenticated) {
     return (
       <SafeAreaProvider>
-        <NavigationContainer>
-          <LoginRegister onLoginSuccess={handleLoginSuccess} />
-        </NavigationContainer>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+          <NavigationContainer>
+            <LoginRegister onLoginSuccess={handleLoginSuccess} />
+          </NavigationContainer>
+        </SafeAreaView>
       </SafeAreaProvider>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <MyTabs onLogout={handleLogout} />
-      </NavigationContainer>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
+        <NavigationContainer>
+          <MyTabs onLogout={handleLogout} />
+        </NavigationContainer>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }
