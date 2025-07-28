@@ -48,7 +48,7 @@ export default function CaseDetails({ route, navigation }) {
             name: 'dava_dilekçesi.pdf',
             size: '2.3 MB',
             type: 'pdf',
-            date: '15.01.2025',
+            date: '30.07.2025',
             uri: null
         },
         {
@@ -56,7 +56,7 @@ export default function CaseDetails({ route, navigation }) {
             name: 'tanık_beyani.doc',
             size: '1.1 MB',
             type: 'doc',
-            date: '20.03.2025',
+            date: '30.07.2025',
             uri: null
         }
     ]);
