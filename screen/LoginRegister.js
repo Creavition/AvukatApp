@@ -20,7 +20,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 const LoginRegister = ({ navigation, onLoginSuccess }) => {
     const [currentScreen, setCurrentScreen] = useState('login');
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+    const [showRegisterPassword, setShowRegisterPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [loginData, setLoginData] = useState({
@@ -130,7 +131,7 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                 {
                     text: 'Tamam',
                     onPress: () => {
-                        
+
                         setRegisterData({
                             fullName: '',
                             email: '',
@@ -138,7 +139,7 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                             confirmPassword: '',
                             phone: ''
                         });
-                       
+
                         setCurrentScreen('login');
                     }
                 }
@@ -206,14 +207,14 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                                     onChangeText={(text) => setLoginData({ ...loginData, password: text })}
                                     placeholder="Şifrenizi girin"
                                     placeholderTextColor="#B0BEC5"
-                                    secureTextEntry={!showPassword}
+                                    secureTextEntry={!showLoginPassword}
                                 />
                                 <TouchableOpacity
                                     style={styles.eyeButton}
-                                    onPress={() => setShowPassword(!showPassword)}
+                                    onPress={() => setShowLoginPassword(!showLoginPassword)}
                                 >
                                     <Ionicons
-                                        name={showPassword ? "eye-off-outline" : "eye-outline"}
+                                        name={showLoginPassword ? "eye-off-outline" : "eye-outline"}
                                         size={20}
                                         color="#64B5F6"
                                     />
@@ -339,14 +340,14 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                                     onChangeText={(text) => setRegisterData({ ...registerData, password: text })}
                                     placeholder="Şifrenizi girin"
                                     placeholderTextColor="#B0BEC5"
-                                    secureTextEntry={!showPassword}
+                                    secureTextEntry={!showRegisterPassword}
                                 />
                                 <TouchableOpacity
                                     style={styles.eyeButton}
-                                    onPress={() => setShowPassword(!showPassword)}
+                                    onPress={() => setShowRegisterPassword(!showRegisterPassword)}
                                 >
                                     <Ionicons
-                                        name={showPassword ? "eye-off-outline" : "eye-outline"}
+                                        name={showRegisterPassword ? "eye-off-outline" : "eye-outline"}
                                         size={20}
                                         color="#64B5F6"
                                     />
@@ -519,7 +520,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         color: '#263238',
-        paddingVertical: 15,
+        paddingVertical: 10,
         fontWeight: '500',
     },
     eyeButton: {
@@ -537,7 +538,7 @@ const styles = StyleSheet.create({
     loginButton: {
         backgroundColor: '#1976D2',
         borderRadius: 15,
-        paddingVertical: 18,
+        paddingVertical: 10,
         alignItems: 'center',
         shadowColor: '#1976D2',
         shadowOffset: {
@@ -577,7 +578,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#1976D2',
         borderRadius: 15,
-        paddingVertical: 16,
+        paddingVertical: 10,
         alignItems: 'center',
     },
     switchButtonText: {
