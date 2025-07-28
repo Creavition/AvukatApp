@@ -1,4 +1,3 @@
-// components/Timeline.js
 import { useState } from 'react';
 import {
     View,
@@ -17,7 +16,6 @@ const Timeline = ({ deadlines = [] }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    // Tarihi formatla
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = date.getDate().toString().padStart(2, '0');
@@ -26,7 +24,6 @@ const Timeline = ({ deadlines = [] }) => {
         return `${day}.${month}.${year}`;
     };
 
-    // Kısa tarih formatı
     const formatShortDate = (dateString) => {
         const date = new Date(dateString);
         const day = date.getDate().toString().padStart(2, '0');
@@ -34,7 +31,6 @@ const Timeline = ({ deadlines = [] }) => {
         return `${day}.${month}`;
     };
 
-    // Kalan gün sayısını hesapla
     const getDaysRemaining = (dateString) => {
         const today = new Date();
         const targetDate = new Date(dateString);
@@ -43,16 +39,14 @@ const Timeline = ({ deadlines = [] }) => {
         return diffDays;
     };
 
-    // Aciliyet durumuna göre renk belirle
     const getUrgencyColor = (daysRemaining) => {
-        if (daysRemaining < 0) return '#9E9E9E'; // Geçmiş - Gri
-        if (daysRemaining <= 3) return '#F44336'; // Kritik - Kırmızı
-        if (daysRemaining <= 7) return '#FF9800'; // Uyarı - Turuncu
-        if (daysRemaining <= 15) return '#FFC107'; // Dikkat - Sarı
-        return '#4CAF50'; // Normal - Yeşil
+        if (daysRemaining < 0) return '#9E9E9E';
+        if (daysRemaining <= 3) return '#F44336'; 
+        if (daysRemaining <= 7) return '#FF9800'; 
+        if (daysRemaining <= 15) return '#FFC107'; 
+        return '#4CAF50'; 
     };
-
-    // Aciliyet durumuna göre ikon belirle
+   
     const getUrgencyIcon = (daysRemaining) => {
         if (daysRemaining < 0) return 'check-circle';
         if (daysRemaining <= 3) return 'error';
@@ -61,7 +55,7 @@ const Timeline = ({ deadlines = [] }) => {
         return 'access-time';
     };
 
-    // Aciliyet durumuna göre metin belirle
+
     const getUrgencyText = (daysRemaining) => {
         if (daysRemaining < 0) return `${Math.abs(daysRemaining)} gün geçti`;
         if (daysRemaining === 0) return 'Bugün';
@@ -69,7 +63,6 @@ const Timeline = ({ deadlines = [] }) => {
         return `${daysRemaining} gün kaldı`;
     };
 
-    // Timeline kartını render et
     const renderTimelineCard = (item, index) => {
         const daysRemaining = getDaysRemaining(item.date);
         const urgencyColor = getUrgencyColor(daysRemaining);
@@ -140,7 +133,6 @@ const Timeline = ({ deadlines = [] }) => {
         );
     };
 
-    // Popup modal içeriği
     const renderModal = () => {
         if (!selectedItem) return null;
 
@@ -248,10 +240,9 @@ const Timeline = ({ deadlines = [] }) => {
         );
     };
 
-    // Sıralanmış deadlines (tarihe göre)
     const sortedDeadlines = deadlines
         .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 20); // İlk 20 öğeyi göster
+        .slice(0, 20); 
 
     return (
         <View style={styles.container}>
@@ -289,7 +280,7 @@ const Timeline = ({ deadlines = [] }) => {
     );
 };
 
-const CARD_WIDTH = width * 0.4; // Ekran genişliğinin %40'ı
+const CARD_WIDTH = width * 0.4; 
 
 const styles = StyleSheet.create({
     container: {
@@ -392,7 +383,7 @@ const styles = StyleSheet.create({
         color: '#333',
         lineHeight: width * 0.045,
         marginBottom: width * 0.02,
-        minHeight: width * 0.09, // 2 satır için sabit yükseklik
+        minHeight: width * 0.09,
     },
     caseInfo: {
         flexDirection: 'row',
@@ -449,7 +440,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
-    // Modal stilleri (önceki ile aynı)
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',

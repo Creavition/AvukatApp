@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Alert, Dimensions } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-// Responsive boyutlandırma için
 const { width: screenWidth } = Dimensions.get('window');
 
 const Calendar = ({ visible, onClose, events = {} }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(null);
-    const [calendarMode, setCalendarMode] = useState('month'); // 'month' veya 'year'
+    const [calendarMode, setCalendarMode] = useState('month');
 
     const monthNames = [
         'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -26,7 +25,7 @@ const Calendar = ({ visible, onClose, events = {} }) => {
         return formatDate(date) === formatDate(today);
     };
 
-    // Ayın günlerini oluştur
+    
     const getDaysInMonth = (year, month) => {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
@@ -36,7 +35,7 @@ const Calendar = ({ visible, onClose, events = {} }) => {
 
         const days = [];
 
-        // Önceki ayın son günleri
+        
         const prevMonthLastDay = new Date(year, month, 0).getDate();
         for (let i = adjustedStartingDay - 1; i >= 0; i--) {
             days.push({
@@ -46,7 +45,7 @@ const Calendar = ({ visible, onClose, events = {} }) => {
             });
         }
 
-        // Bu ayın günleri
+        
         for (let day = 1; day <= daysInMonth; day++) {
             days.push({
                 day: day,
@@ -55,7 +54,7 @@ const Calendar = ({ visible, onClose, events = {} }) => {
             });
         }
 
-        // Sonraki ayın ilk günleri
+        
         const remainingCells = 42 - days.length;
         for (let day = 1; day <= remainingCells; day++) {
             days.push({
@@ -68,7 +67,6 @@ const Calendar = ({ visible, onClose, events = {} }) => {
         return days;
     };
 
-    // Yıl görünümü için ayları oluştur
     const getMonthsForYear = (year) => {
         const months = [];
         for (let month = 0; month < 12; month++) {
@@ -81,21 +79,20 @@ const Calendar = ({ visible, onClose, events = {} }) => {
         return months;
     };
 
-    // Yıl değiştir
     const changeYear = (direction) => {
         const newDate = new Date(currentDate);
         newDate.setFullYear(currentDate.getFullYear() + direction);
         setCurrentDate(newDate);
     };
 
-    // Ay değiştir
+
     const changeMonth = (direction) => {
         const newDate = new Date(currentDate);
         newDate.setMonth(currentDate.getMonth() + direction);
         setCurrentDate(newDate);
     };
 
-    // Gün seç
+
     const selectDate = (date) => {
         setSelectedDate(date);
         const dateString = formatDate(date);
@@ -108,7 +105,7 @@ const Calendar = ({ visible, onClose, events = {} }) => {
         }
     };
 
-    // Ay takvimi render
+    
     const renderMonthCalendar = () => {
         const days = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
         const weeks = [];
@@ -183,7 +180,6 @@ const Calendar = ({ visible, onClose, events = {} }) => {
         );
     };
 
-    // Yıl takvimi render
     const renderYearCalendar = () => {
         const months = getMonthsForYear(currentDate.getFullYear());
 
@@ -283,7 +279,6 @@ const Calendar = ({ visible, onClose, events = {} }) => {
 };
 
 const styles = StyleSheet.create({
-    // Modal Stilleri
     modalContainer: {
         flex: 1,
         backgroundColor: '#fff',
@@ -313,7 +308,6 @@ const styles = StyleSheet.create({
         padding: screenWidth * 0.025,
     },
 
-    // Ay Takvimi Stilleri
     monthCalendar: {
         flex: 1,
         padding: screenWidth * 0.05,
@@ -412,7 +406,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#F44336',
     },
 
-    // Yıl Takvimi Stilleri
     yearCalendar: {
         flex: 1,
         padding: 20,

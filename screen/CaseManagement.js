@@ -7,11 +7,9 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
-  ScrollView,
   Dimensions,
   Linking,
   Platform,
-  StatusBar
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -43,7 +41,6 @@ export default function CaseManagement({ navigation }) {
     setFiltrelenmisListe(sonuc);
   }, [searchText, selectedFilter]);
 
-  // Duruşma tarihini formatla
   const formatDurusma = (tarih) => {
     const date = new Date(tarih);
     return date.toLocaleDateString('tr-TR', {
@@ -55,32 +52,25 @@ export default function CaseManagement({ navigation }) {
     });
   };
 
-  // Google Maps'te mahkeme konumunu açma fonksiyonu
   const openGoogleMaps = async (dava) => {
     try {
-      // Arama sorgusu oluştur (mahkeme adı + adres)
       const searchQuery = `${dava.mahkeme.ad} ${dava.mahkeme.adres}`;
 
-      // Platform'a göre URL oluştur
       let mapsUrl;
 
       if (Platform.OS === 'ios') {
-        // iOS için Apple Maps
         mapsUrl = `maps:0,0?q=${encodeURIComponent(searchQuery)}`;
       } else {
-        // Android için Google Maps
         mapsUrl = `geo:0,0?q=${encodeURIComponent(searchQuery)}`;
       }
 
       const webUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
 
-      // Harita uygulamasını açmayı dene
       const canOpenMaps = await Linking.canOpenURL(mapsUrl);
 
       if (canOpenMaps) {
         await Linking.openURL(mapsUrl);
       } else {
-        // Harita uygulaması yoksa web tarayıcısında aç
         await Linking.openURL(webUrl);
       }
 
@@ -94,7 +84,6 @@ export default function CaseManagement({ navigation }) {
     }
   };
 
-  // Konum izni kontrol fonksiyonu
   const checkLocationPermission = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -105,10 +94,8 @@ export default function CaseManagement({ navigation }) {
     }
   };
 
-  // Harita butonu tıklama fonksiyonu
   const haritayaGit = async (dava) => {
     try {
-      // Önce konum iznini kontrol et
       const hasPermission = await checkLocationPermission();
 
       if (!hasPermission) {
@@ -130,7 +117,6 @@ export default function CaseManagement({ navigation }) {
         return;
       }
 
-      // İzin varsa harita seçeneklerini göster
       Alert.alert(
         'Harita Seçenekleri',
         `${dava.mahkeme.ad} konumunu nasıl görüntülemek istiyorsunuz?`,
@@ -146,13 +132,10 @@ export default function CaseManagement({ navigation }) {
 
     } catch (error) {
       console.error('Harita erişim hatası:', error);
-      // Hata durumunda direkt haritayı aç
       openGoogleMaps(dava);
     }
   };
 
-
-  // Dava kartı render fonksiyonu
   const renderDavaKart = ({ item }) => {
     const durumRengi = getDurumHexRengi(item.itirazSuresi.kalanGun);
 
@@ -244,7 +227,6 @@ export default function CaseManagement({ navigation }) {
     );
   };
 
-  // Filtre butonları
   const renderFilters = () => {
     const filters = [
       { key: 'tumu', label: 'Tümü', count: davaListesi.length },
@@ -279,12 +261,11 @@ export default function CaseManagement({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
       {/* Arama Çubuğu */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
           <Ionicons
-            style={{ paddingRight: 10, paddingTop: 4, alignItems: "center" }}
+            style={{ paddingRight: 10, alignItems: "center" }}
             name="search"
             size={24}
             color="black"
@@ -365,12 +346,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     paddingHorizontal: screenWidth * 0.05,
-    paddingTop: screenHeight * 0.06,
+    paddingTop: screenHeight * 0.02,
   },
   searchContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: screenHeight * 0.1,
+    height: screenHeight * 0.07,
   },
   searchBar: {
     flexDirection: "row",
@@ -381,7 +362,7 @@ const styles = StyleSheet.create({
     borderRadius: screenWidth * 0.025,
     borderColor: "black",
     marginTop: screenHeight * 0.02,
-    marginBottom: screenHeight * 0.025,
+    marginBottom: screenHeight * 0.015,
     paddingHorizontal: screenWidth * 0.03,
     backgroundColor: '#fff',
     alignItems: 'center',
@@ -405,6 +386,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+    marginTop: screenHeight * 0.025,
     marginBottom: screenHeight * 0.025,
     minHeight: screenHeight * 0.06,
   },
@@ -465,7 +447,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  // Sonuç Section
   resultSection: {
     marginBottom: screenHeight * 0.02,
     paddingHorizontal: screenWidth * 0.01,
@@ -475,7 +456,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   listContainer: {
-    paddingBottom: screenHeight * 0.05,
+    paddingBottom: Platform.OS === 'android' ? 90 : 80,
   },
   davaKart: {
     backgroundColor: 'white',

@@ -23,7 +23,6 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Form verileri
     const [loginData, setLoginData] = useState({
         email: '',
         password: ''
@@ -37,7 +36,6 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         phone: ''
     });
 
-    // Giriş yapma
     const handleLogin = async () => {
         if (!loginData.email || !loginData.password) {
             Alert.alert('Uyarı', 'Lütfen tüm alanları doldurun.');
@@ -47,11 +45,9 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         setLoading(true);
 
         try {
-            // Kayıtlı kullanıcıları kontrol et
             const registeredUsers = await AsyncStorage.getItem('registeredUsers');
             const users = registeredUsers ? JSON.parse(registeredUsers) : [];
 
-            // Kullanıcı kayıtlı mı kontrol et
             const user = users.find(u =>
                 u.email.toLowerCase() === loginData.email.toLowerCase() &&
                 u.password === loginData.password
@@ -63,10 +59,8 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                 return;
             }
 
-            // Simulated login delay
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // Başarılı giriş - AsyncStorage'a kaydet
             await AsyncStorage.multiSet([
                 ['userToken', 'dummy_token_' + Date.now()],
                 ['isLoggedIn', 'true'],
@@ -74,7 +68,6 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                 ['userName', user.fullName]
             ]);
 
-            // Direk home sayfasına yönlendir
             if (onLoginSuccess) {
                 onLoginSuccess();
             }
@@ -86,7 +79,6 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         }
     };
 
-    // Kayıt olma
     const handleRegister = async () => {
         if (!registerData.fullName || !registerData.email ||
             !registerData.password || !registerData.confirmPassword) {
@@ -107,11 +99,9 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         setLoading(true);
 
         try {
-            // Mevcut kullanıcıları kontrol et
             const registeredUsers = await AsyncStorage.getItem('registeredUsers');
             const users = registeredUsers ? JSON.parse(registeredUsers) : [];
 
-            // E-posta zaten kayıtlı mı kontrol et
             const existingUser = users.find(u =>
                 u.email.toLowerCase() === registerData.email.toLowerCase()
             );
@@ -122,7 +112,6 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                 return;
             }
 
-            // Yeni kullanıcıyı ekle
             const newUser = {
                 id: Date.now().toString(),
                 fullName: registerData.fullName,
@@ -135,15 +124,13 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
             users.push(newUser);
             await AsyncStorage.setItem('registeredUsers', JSON.stringify(users));
 
-            // Simulated registration delay
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // Başarılı kayıt sonrası login sayfasına yönlendir
             Alert.alert('Başarılı', 'Hesabınız oluşturuldu! Şimdi giriş yapabilirsiniz.', [
                 {
                     text: 'Tamam',
                     onPress: () => {
-                        // Kayıt formunu temizle
+                        
                         setRegisterData({
                             fullName: '',
                             email: '',
@@ -151,7 +138,7 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                             confirmPassword: '',
                             phone: ''
                         });
-                        // Login sayfasına yönlendir
+                       
                         setCurrentScreen('login');
                     }
                 }

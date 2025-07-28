@@ -12,13 +12,12 @@ export default function Home() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: Platform.OS === 'android' ? 20 : 25, paddingBottom: screenHeight * 0.05 }}>
                 <View style={{ justifyContent: 'center', alignItems: "center" }}>
                     {/* Arama Çubuğu */}
                     <View style={styles.searchBar}>
                         <Ionicons
-                            style={{ paddingRight: 10, paddingTop: 10, alignItems: "center" }}
+                            style={{ alignItems: "center", paddingRight: 10 }}
                             name="search"
                             size={24}
                             color="black"
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        paddingTop: 0,
         paddingBottom: Platform.OS === 'android' ? 10 : 0,
     },
     container: {
@@ -129,7 +128,7 @@ const styles = StyleSheet.create({
     content: {
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
-        paddingVertical: screenWidth * 0.08,
+        paddingVertical: screenWidth * 0.05,
         paddingHorizontal: screenWidth * 0.05,
     },
     searchBar: {
@@ -138,16 +137,16 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.9,
         maxWidth: 400,
         borderWidth: 2,
-        borderRadius: 10,
+        borderRadius: screenWidth * 0.025,
         borderColor: "black",
-        margin: screenHeight * 0.02,
+        marginTop: 0,
+        marginHorizontal: screenWidth * 0.05,
         paddingHorizontal: screenWidth * 0.03,
         marginBottom: screenWidth * 0.05,
         backgroundColor: '#fff',
+        alignItems: 'center',
     },
     input: {
-        justifyContent: "center",
-        alignItems: "center",
         flex: 1,
         fontSize: screenWidth * 0.04,
         color: '#333',

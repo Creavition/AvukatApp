@@ -13,11 +13,9 @@ import {
     Dimensions,
     SafeAreaView,
     Platform,
-    StatusBar
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-// Responsive boyutlandırma için
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function IletisimModulu({ route, navigation }) {
@@ -32,17 +30,16 @@ export default function IletisimModulu({ route, navigation }) {
     const [showTemplateModal, setShowTemplateModal] = useState(false);
     const [showTemplateList, setShowTemplateList] = useState(false);
 
-    // Tab değiştiğinde search'i temizle
     const handleTabChange = (tabName) => {
         setSelectedTab(tabName);
-        setSearchText(''); // Search'i temizle
+        setSearchText('');
     };
 
-    // Dava bazlı kişiler listesi - dinamik olarak oluşturulur
+
     const createKisilerListesi = () => {
         const kisiler = [];
 
-        // Müvekkil
+
         kisiler.push({
             id: 1,
             ad: dava.muvekkil.ad,
@@ -56,7 +53,7 @@ export default function IletisimModulu({ route, navigation }) {
             renk: '#4CAF50'
         });
 
-        // Karşı Taraf
+
         if (dava.karsiTaraf) {
             kisiler.push({
                 id: 2,
@@ -72,7 +69,7 @@ export default function IletisimModulu({ route, navigation }) {
             });
         }
 
-        // Tanıklar
+
         if (dava.taniklar && dava.taniklar.length > 0) {
             dava.taniklar.forEach((tanik, index) => {
                 kisiler.push({
@@ -95,12 +92,11 @@ export default function IletisimModulu({ route, navigation }) {
 
     const [kisilerListesi] = useState(createKisilerListesi());
 
-    // Görüşme ve randevu geçmişi - dava bazlı
+
     const createIletisimGecmisi = () => {
         const gecmis = [];
         const kisiler = createKisilerListesi();
 
-        // Müvekkil ile son görüşme
         if (kisiler.length > 0) {
             gecmis.push({
                 id: 1,
@@ -114,7 +110,6 @@ export default function IletisimModulu({ route, navigation }) {
             });
         }
 
-        // Karşı taraf ile e-posta
         if (kisiler.length > 1) {
             gecmis.push({
                 id: 2,
@@ -127,7 +122,6 @@ export default function IletisimModulu({ route, navigation }) {
             });
         }
 
-        // WhatsApp hatırlatması
         if (kisiler.length > 0) {
             gecmis.push({
                 id: 3,
@@ -136,7 +130,7 @@ export default function IletisimModulu({ route, navigation }) {
                 tarih: '2025-01-15',
                 saat: '16:45',
                 konu: 'Duruşma tarih hatırlatması',
-                notlar: `${dava.durusmaFormatli} tarihindeki duruşma hatırlatıldı.`
+                notlar: `${dava.durusmaTarihi} tarihindeki duruşma hatırlatıldı.`
             });
         }
 
@@ -145,14 +139,13 @@ export default function IletisimModulu({ route, navigation }) {
 
     const [iletisimGecmisi] = useState(createIletisimGecmisi());
 
-    // Mesaj şablonları - dava türüne göre özelleştirilmiş
     const createMesajSablonlari = () => {
         const genel = [
             {
                 id: 1,
                 baslik: 'Duruşma Hatırlatması',
                 kategori: 'randevu',
-                sablon: `Sayın {{ad}} {{soyad}}, ${dava.durusmaFormatli} tarihinde ${dava.mahkeme.ad} mahkemesinde ${dava.davaTuru} davamızın duruşması bulunmaktadır. Lütfen zamanında teşrif ediniz.`
+                sablon: `Sayın {{ad}} {{soyad}}, ${dava.durusmaTarihi} tarihinde ${dava.mahkeme.ad} mahkemesinde ${dava.davaTuru} davamızın duruşması bulunmaktadır. Lütfen zamanında teşrif ediniz.`
             },
             {
                 id: 2,
@@ -174,7 +167,6 @@ export default function IletisimModulu({ route, navigation }) {
             }
         ];
 
-        // Dava türüne özel şablonlar
         const ozelSablonlar = [];
 
         switch (dava.davaTuru) {
@@ -219,7 +211,6 @@ export default function IletisimModulu({ route, navigation }) {
 
     const [mesajSablonlari] = useState(createMesajSablonlari());
 
-    // Arama fonksiyonu - tab'a göre farklı filtreleme
     const filtrelenmisKisiler = kisilerListesi.filter(kisi => {
         const adSoyad = `${kisi.ad || ''} ${kisi.soyad || ''}`.toLowerCase();
         const rol = (kisi.rol || '').toLowerCase();
@@ -239,12 +230,10 @@ export default function IletisimModulu({ route, navigation }) {
     const filtrelenmisGecmis = iletisimGecmisi.filter(kayit => {
         const searchLower = (searchText || '').toLowerCase();
 
-        // Kişi bilgilerini bul
         const kisi = kisilerListesi.find(k => k.id === kayit.kisiId);
         const kisiAd = kisi ? `${kisi.ad || ''} ${kisi.soyad || ''}`.toLowerCase() : '';
         const kisiRol = kisi ? (kisi.rol || '').toLowerCase() : '';
 
-        // Kayıt bilgileri
         const tip = (kayit.tip || '').toLowerCase();
         const konu = (kayit.konu || '').toLowerCase();
         const notlar = (kayit.notlar || '').toLowerCase();
@@ -256,7 +245,7 @@ export default function IletisimModulu({ route, navigation }) {
             konu.includes(searchLower) ||
             notlar.includes(searchLower) ||
             tarih.includes(searchLower);
-    });    // İletişim işlemleri
+    });
     const telefonAra = (telefon, kisi) => {
         if (!telefon) {
             Alert.alert('Uyarı', 'Bu kişi için telefon numarası bulunamadı.');
@@ -271,7 +260,6 @@ export default function IletisimModulu({ route, navigation }) {
                     text: 'Ara',
                     onPress: () => {
                         Linking.openURL(`tel:${telefon}`);
-                        // Görüşme geçmişine kaydet
                         kaydEkle(kisi.id, 'telefon', `Telefon araması yapıldı: ${telefon}`);
                     }
                 }
@@ -309,16 +297,13 @@ export default function IletisimModulu({ route, navigation }) {
         const subject = encodeURIComponent(`Dava: ${dava.davaNo} - ${dava.davaTuru}`);
         const body = encodeURIComponent(`Sayın ${kisi.ad} ${kisi.soyad},\n\n${dava.davaNo} numaralı ${dava.davaTuru} davamız hakkında...\n\nSaygılarımla,\nAvukat`);
 
-        // Gmail uygulamasını açmayı dene
         const gmailUrl = `googlegmail://co?to=${email}&subject=${subject}&body=${body}`;
 
         Linking.canOpenURL(gmailUrl)
             .then(supported => {
                 if (supported) {
-                    // Gmail uygulaması varsa Gmail'i aç
                     return Linking.openURL(gmailUrl);
                 } else {
-                    // Gmail uygulaması yoksa varsayılan e-posta uygulamasını aç
                     const mailtoUrl = `mailto:${email}?subject=${subject}&body=${body}`;
                     return Linking.openURL(mailtoUrl);
                 }
@@ -332,7 +317,6 @@ export default function IletisimModulu({ route, navigation }) {
             });
     };
 
-    // Kayıt ekleme
     const kaydEkle = (kisiId, tip, konu) => {
         const yeniKayit = {
             id: Date.now(),
@@ -343,17 +327,14 @@ export default function IletisimModulu({ route, navigation }) {
             konu: konu,
             notlar: ''
         };
-        // Burada normalde state güncellenecek
         console.log('Yeni iletişim kaydı:', yeniKayit);
     };
 
-    // Şablon kullanarak mesaj oluştur
     const sablonKullan = (sablon) => {
         setSelectedTemplate(sablon);
         setShowTemplateModal(true);
     };
 
-    // SMS modalında şablon kullan
     const smsIcinSablonKullan = (sablon) => {
         let mesaj = sablon.sablon;
         if (selectedPerson) {
@@ -364,7 +345,6 @@ export default function IletisimModulu({ route, navigation }) {
         setShowTemplateList(false);
     };
 
-    // Mesaj gönder
     const mesajGonder = () => {
         if (!messageText.trim()) {
             Alert.alert('Uyarı', 'Lütfen mesaj metnini girin.');
@@ -380,7 +360,6 @@ export default function IletisimModulu({ route, navigation }) {
         setSelectedPerson(null);
     };
 
-    // Kişi kartı render
     const renderKisiKarti = ({ item }) => (
         <View style={styles.kisiKarti}>
             <View style={styles.kisiHeader}>
@@ -408,7 +387,7 @@ export default function IletisimModulu({ route, navigation }) {
                     onPress={() => item.telefon ? telefonAra(item.telefon, item) : null}
                     disabled={!item.telefon}
                 >
-                    <Ionicons name="call" size={20} color="#fff" />
+                    <Ionicons name="call" size={16} color="#fff" />
                     <Text style={styles.buttonText}>Ara</Text>
                 </TouchableOpacity>
 
@@ -422,7 +401,7 @@ export default function IletisimModulu({ route, navigation }) {
                     onPress={() => item.telefon ? smsGonder(item.telefon, item) : null}
                     disabled={!item.telefon}
                 >
-                    <Ionicons name="chatbubble" size={20} color="#fff" />
+                    <Ionicons name="chatbubble" size={16} color="#fff" />
                     <Text style={styles.buttonText}>SMS</Text>
                 </TouchableOpacity>
 
@@ -436,7 +415,7 @@ export default function IletisimModulu({ route, navigation }) {
                     onPress={() => item.whatsapp ? whatsappGonder(item.whatsapp, item) : null}
                     disabled={!item.whatsapp}
                 >
-                    <Ionicons name="logo-whatsapp" size={20} color="#fff" />
+                    <Ionicons name="logo-whatsapp" size={16} color="#fff" />
                     <Text style={styles.buttonText}>WhatsApp</Text>
                 </TouchableOpacity>
 
@@ -444,20 +423,19 @@ export default function IletisimModulu({ route, navigation }) {
                     style={[
                         styles.iletisimButton,
                         {
-                            backgroundColor: item.email ? '#FF9800' : '#ccc'
+                            backgroundColor: item.email ? '#FF9800' : '#ccc',
                         }
                     ]}
                     onPress={() => item.email ? emailGonder(item.email, item) : null}
                     disabled={!item.email}
                 >
-                    <Ionicons name="mail" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>E-posta</Text>
+                    <Ionicons name="mail" size={16} color="#fff" />
+                    <Text style={[styles.buttonText]}>E-posta</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 
-    // Geçmiş kayıt render
     const renderGecmisKayit = ({ item }) => {
         const kisi = kisilerListesi.find(k => k.id === item.kisiId);
         const tipIcon = {
@@ -480,7 +458,6 @@ export default function IletisimModulu({ route, navigation }) {
         );
     };
 
-    // Şablon render
     const renderSablon = ({ item }) => (
         <TouchableOpacity
             style={styles.sablonKarti}
@@ -498,7 +475,6 @@ export default function IletisimModulu({ route, navigation }) {
         </TouchableOpacity>
     );
 
-    // SMS modal için şablon render
     const renderSmsIcinSablon = ({ item }) => (
         <TouchableOpacity
             style={styles.smsModalSablonKarti}
@@ -526,7 +502,6 @@ export default function IletisimModulu({ route, navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
             <View style={styles.container}>
                 {/* Header */}
                 <View style={styles.header}>
@@ -594,7 +569,10 @@ export default function IletisimModulu({ route, navigation }) {
                 </View>
 
                 {/* İçerik */}
-                <ScrollView style={styles.content}>
+                <ScrollView
+                    style={styles.content}
+                    contentContainerStyle={styles.scrollContent}
+                >
                     {selectedTab === 'kisiler' && (
                         <FlatList
                             data={filtrelenmisKisiler}
@@ -743,7 +721,7 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#f5f5f5',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        paddingTop: Platform.OS === 'android' ? 0 : 0,
         paddingBottom: Platform.OS === 'android' ? 10 : 0,
     },
     container: {
@@ -808,7 +786,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         marginVertical: 10,
         paddingHorizontal: 15,
-        paddingVertical: 10,
+        paddingVertical: 8,
         borderRadius: 10,
         elevation: 1,
     },
@@ -820,6 +798,9 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         padding: 15,
+    },
+    scrollContent: {
+        paddingBottom: Platform.OS === 'android' ? 90 : 80,
     },
     kisiKarti: {
         backgroundColor: '#fff',
@@ -871,22 +852,29 @@ const styles = StyleSheet.create({
     },
     iletisimButonlari: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+        marginTop: 10,
+        gap: 2,
     },
     iletisimButton: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 10,
-        borderRadius: 8,
-        marginHorizontal: 2,
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        borderRadius: 6,
+        marginHorizontal: 0,
+        minHeight: 36,
+        minWidth: 78
     },
     buttonText: {
         color: '#fff',
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: 'bold',
-        marginLeft: 5,
+        marginLeft: 3,
+        textAlign: 'center',
+        flexShrink: 1,
     },
     gecmisKayit: {
         backgroundColor: '#fff',

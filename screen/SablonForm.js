@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-// Responsive boyutlandırma için
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function SablonForm({ route, navigation }) {
@@ -22,7 +21,6 @@ export default function SablonForm({ route, navigation }) {
     const [formFields, setFormFields] = useState([]);
     const [doldurulmusMetin, setDoldurulmusMetin] = useState('');
 
-    // Şablondan form alanlarını çıkarma
     useEffect(() => {
         if (sablon && sablon.sablon) {
             const regex = /\{\{([^}]+)\}\}/g;
@@ -43,7 +41,6 @@ export default function SablonForm({ route, navigation }) {
 
             setFormFields(fields);
 
-            // FormData'yı başlat
             const initialData = {};
             fields.forEach(field => {
                 initialData[field.name] = '';
@@ -52,7 +49,6 @@ export default function SablonForm({ route, navigation }) {
         }
     }, [sablon]);
 
-    // Alan adını kullanıcı dostu hale getir
     const formatFieldLabel = (fieldName) => {
         const labelMap = {
             'mahkeme_adi': 'Mahkeme Adı',
@@ -110,19 +106,10 @@ export default function SablonForm({ route, navigation }) {
         return labelMap[fieldName] || fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
-    // Alan tipini belirle
     const getFieldType = (fieldName) => {
-        if (fieldName.includes('tarih')) return 'date';
-        if (fieldName.includes('telefon')) return 'phone';
-        if (fieldName.includes('email')) return 'email';
-        if (fieldName.includes('tc')) return 'numeric';
-        if (fieldName.includes('miktar')) return 'numeric';
-        if (fieldName.includes('no')) return 'numeric';
-        if (fieldName.includes('aciklama') || fieldName.includes('durumu') || fieldName.includes('gerekce')) return 'multiline';
         return 'text';
     };
 
-    // Form verisi güncelleme
     const updateFormData = (fieldName, value) => {
         setFormData(prev => ({
             ...prev,
@@ -130,11 +117,9 @@ export default function SablonForm({ route, navigation }) {
         }));
     };
 
-    // Metni doldur
     const fillTemplate = () => {
         let filledText = sablon.sablon;
 
-        // Boş alanları kontrol et
         const emptyFields = formFields.filter(field =>
             field.required && (!formData[field.name] || formData[field.name].trim() === '')
         );
@@ -148,7 +133,6 @@ export default function SablonForm({ route, navigation }) {
             return;
         }
 
-        // Şablonu doldur
         formFields.forEach(field => {
             const regex = new RegExp(`\\{\\{${field.name}\\}\\}`, 'g');
             filledText = filledText.replace(regex, formData[field.name] || '');
@@ -156,7 +140,6 @@ export default function SablonForm({ route, navigation }) {
 
         setDoldurulmusMetin(filledText);
 
-        // Sonuç ekranına geç
         navigation.navigate('SablonSonuc', {
             sablon: sablon,
             doldurulmusMetin: filledText,
@@ -164,7 +147,7 @@ export default function SablonForm({ route, navigation }) {
         });
     };
 
-    // Form alanını render et
+
     const renderFormField = (field) => {
         const value = formData[field.name] || '';
 
@@ -191,12 +174,6 @@ export default function SablonForm({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => updateFormData(field.name, text)}
                         placeholder={`${field.label} giriniz...`}
-                        keyboardType={
-                            field.type === 'numeric' ? 'numeric' :
-                                field.type === 'phone' ? 'phone-pad' :
-                                    field.type === 'email' ? 'email-address' : 'default'
-                        }
-                        autoCapitalize={field.type === 'email' ? 'none' : 'words'}
                     />
                 )}
             </View>
@@ -248,31 +225,6 @@ export default function SablonForm({ route, navigation }) {
                 </View>
             </ScrollView>
 
-            {/* Alt Buton */}
-            <View style={styles.bottomContainer}>
-                <TouchableOpacity
-                    style={styles.previewButton}
-                    onPress={() => {
-                        // Önizleme göster
-                        Alert.alert(
-                            'Önizleme',
-                            'Şablon önizlemesi özelliği geliştirme aşamasındadır.',
-                            [{ text: 'Tamam' }]
-                        );
-                    }}
-                >
-                    <MaterialIcons name="preview" size={20} color="#666" />
-                    <Text style={styles.previewButtonText}>Önizleme</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={fillTemplate}
-                >
-                    <MaterialIcons name="done" size={20} color="#fff" />
-                    <Text style={styles.submitButtonText}>Dilekçeyi Oluştur</Text>
-                </TouchableOpacity>
-            </View>
         </KeyboardAvoidingView>
     );
 }
@@ -288,7 +240,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: screenWidth * 0.05,
         paddingVertical: screenWidth * 0.04,
-        paddingTop: screenWidth * 0.12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',

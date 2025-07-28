@@ -10,14 +10,13 @@ import {
     Alert,
     Share,
     Platform,
-    Dimensions,
-    StatusBar
+    Dimensions
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import RNPrint from 'react-native-print';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { dilekceKategorileri } from '../data/DilekceData';
 
-// Responsive boyutlandırma için
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function DilekceModulu({ navigation }) {
@@ -28,195 +27,6 @@ export default function DilekceModulu({ navigation }) {
     const [searchText, setSearchText] = useState('');
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-    // HTML template oluşturma - Print için optimize edilmiş
-    const createPrintHTML = (content, title) => {
-        // Metni HTML formatına çevirme
-        const htmlContent = content
-            .replace(/\n/g, '<br>')
-            .replace(/\s{4,}/g, (match) => '&nbsp;'.repeat(match.length))
-            .replace(/{{([^}]+)}}/g, '<span style="background-color: #ffeb3b; padding: 2px 4px; border-radius: 3px; font-weight: bold;">{{$1}}</span>');
-
-        return `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${title}</title>
-            <style>
-                @page {
-                    size: A4 portrait;
-                    margin: 2cm;
-                }
-                
-                * {
-                    box-sizing: border-box;
-                }
-                
-                body {
-                    font-family: 'Times New Roman', 'Times', serif;
-                    font-size: 12pt;
-                    line-height: 1.6;
-                    color: #000;
-                    margin: 0;
-                    padding: 0;
-                    background: white;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                }
-                
-                .document-container {
-                    max-width: 210mm;
-                    margin: 0 auto;
-                    padding: 20px;
-                    min-height: 297mm;
-                }
-                
-                .header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                    border-bottom: 2px solid #000;
-                    padding-bottom: 20px;
-                }
-                
-                .header h1 {
-                    font-size: 16pt;
-                    font-weight: bold;
-                    margin: 0 0 10px 0;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-                
-                .header .subtitle {
-                    font-size: 11pt;
-                    color: #333;
-                    margin: 0;
-                    font-style: italic;
-                }
-                
-                .content {
-                    text-align: left;
-                    line-height: 1.8;
-                    white-space: pre-line;
-                    font-size: 12pt;
-                    margin-bottom: 50px;
-                }
-                
-                .signature-area {
-                    margin-top: 60px;
-                    text-align: right;
-                    page-break-inside: avoid;
-                }
-                
-                .signature-line {
-                    border-top: 1px solid #000;
-                    width: 200px;
-                    margin-left: auto;
-                    padding-top: 10px;
-                    text-align: center;
-                    font-size: 10pt;
-                }
-                
-                .footer {
-                    position: fixed;
-                    bottom: 1cm;
-                    left: 0;
-                    right: 0;
-                    text-align: center;
-                    font-size: 8pt;
-                    color: #666;
-                    border-top: 1px solid #eee;
-                    padding-top: 10px;
-                }
-                
-                .watermark {
-                    position: fixed;
-                    bottom: 0.5cm;
-                    right: 1cm;
-                    font-size: 8pt;
-                    color: #ccc;
-                    opacity: 0.5;
-                    z-index: -1;
-                }
-                
-                .page-number {
-                    position: fixed;
-                    bottom: 1cm;
-                    right: 2cm;
-                    font-size: 10pt;
-                    color: #666;
-                }
-                
-                /* Responsive ve yazdırma için özel stiller */
-                @media print {
-                    body {
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
-                    
-                    .no-print {
-                        display: none !important;
-                    }
-                    
-                    .page-break {
-                        page-break-before: always;
-                    }
-                }
-                
-                @media screen and (max-width: 768px) {
-                    .document-container {
-                        padding: 10px;
-                    }
-                    
-                    .header h1 {
-                        font-size: 14pt;
-                    }
-                    
-                    .content {
-                        font-size: 11pt;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="document-container">
-                <div class="header">
-                    <h1>${title}</h1>
-                    <p class="subtitle">Oluşturulma Tarihi: ${new Date().toLocaleDateString('tr-TR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        })}</p>
-                </div>
-                
-                <div class="content">
-                    ${htmlContent}
-                </div>
-                
-                <div class="signature-area">
-                    <div class="signature-line">
-                        İmza
-                    </div>
-                </div>
-            </div>
-            
-            <div class="footer">
-                Bu belge HukukApp ile dijital ortamda oluşturulmuştur.
-            </div>
-            
-            <div class="watermark">
-                HukukApp © ${new Date().getFullYear()}
-            </div>
-            
-            <div class="page-number">
-                Sayfa 1
-            </div>
-        </body>
-        </html>
-        `;
-    };
-
-    // PDF/Print oluşturma fonksiyonu
     const generatePDF = async () => {
         if (!editedContent.trim()) {
             Alert.alert('Uyarı', 'PDF oluşturmak için önce içerik girmelisiniz.');
@@ -226,51 +36,191 @@ export default function DilekceModulu({ navigation }) {
         setIsGeneratingPDF(true);
 
         try {
-            // HTML içeriği oluştur
-            const htmlContent = createPrintHTML(
-                editedContent,
-                selectedSablon?.baslik || 'Dilekçe'
-            );
-
-            // Print seçenekleri
-            const options = {
-                html: htmlContent,
-                fileName: `${(selectedSablon?.baslik || 'Dilekce').replace(/\s+/g, '_')}_${Date.now()}`,
-                base64: false,
-                width: 595,  // A4 genişlik (pt)
-                height: 842, // A4 yükseklik (pt)
-                padding: {
-                    top: 40,
-                    bottom: 40,
-                    left: 40,
-                    right: 40
-                }
-            };
-
-            // Print işlemi başlat
-            await RNPrint.print(options);
-
-            Alert.alert(
-                'Başarılı',
-                'Belge hazırlandı! Print/PDF menüsü açıldı.',
-                [
-                    { text: 'Tamam', style: 'default' },
-                    {
-                        text: 'Tekrar Oluştur',
-                        onPress: () => generatePDF(),
-                        style: 'default'
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 40px;
                     }
-                ]
-            );
+                    
+                    body {
+                        font-family: 'Times New Roman', serif;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        margin: 0;
+                        padding: 20px;
+                        color: #000;
+                        background: white;
+                    }
+                    
+                    .header {
+                        text-align: center;
+                        margin-bottom: 40px;
+                        border-bottom: 2px solid #000;
+                        padding-bottom: 20px;
+                    }
+                    
+                    .header h1 {
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin: 0;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+                    
+                    .date {
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 10px;
+                        font-style: italic;
+                    }
+                    
+                    .content {
+                        text-align: justify;
+                        line-height: 1.8;
+                        margin-bottom: 60px;
+                        white-space: pre-line;
+                        font-size: 14px;
+                    }
+                    
+                    .signature {
+                        margin-top: 80px;
+                        text-align: right;
+                        page-break-inside: avoid;
+                    }
+                    
+                    .signature-line {
+                        border-top: 1px solid #000;
+                        width: 200px;
+                        margin-left: auto;
+                        padding-top: 10px;
+                        text-align: center;
+                        font-size: 12px;
+                    }
+                    
+                    .footer {
+                        position: fixed;
+                        bottom: 30px;
+                        left: 0;
+                        right: 0;
+                        text-align: center;
+                        font-size: 10px;
+                        color: #888;
+                        border-top: 1px solid #eee;
+                        padding-top: 10px;
+                    }
+                    
+                    .highlight {
+                        background-color: #ffeb3b;
+                        padding: 2px 4px;
+                        border-radius: 3px;
+                        font-weight: bold;
+                    }
+                    
+                    .page-info {
+                        position: fixed;
+                        bottom: 15px;
+                        right: 40px;
+                        font-size: 10px;
+                        color: #666;
+                    }
+                    
+                    @media print {
+                        body { -webkit-print-color-adjust: exact; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>${selectedSablon?.baslik || 'DİLEKÇE'}</h1>
+                    <div class="date">
+                        Tarih: ${new Date().toLocaleDateString('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}
+                    </div>
+                </div>
+                
+                <div class="content">
+                    ${editedContent
+                    .replace(/\n/g, '<br>')
+                    .replace(/{{([^}]+)}}/g, '<span class="highlight">{{$1}}</span>')
+                }
+                </div>
+                
+                <div class="signature">
+                    <div class="signature-line">
+                        İmza
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    Bu belge HukukApp ile oluşturulmuştur - ${new Date().getFullYear()}
+                </div>
+                
+                <div class="page-info">
+                    Sayfa 1
+                </div>
+            </body>
+            </html>
+            `;
+
+            const { uri } = await Print.printToFileAsync({
+                html: htmlContent,
+                base64: false
+            });
+
+            console.log('PDF oluşturuldu:', uri);
+
+            const isAvailable = await Sharing.isAvailableAsync();
+
+            if (isAvailable) {
+                Alert.alert(
+                    'PDF Oluşturuldu!',
+                    'Dosya başarıyla hazırlandı. Ne yapmak istiyorsunuz?',
+                    [
+                        { text: 'Tamam', style: 'default' },
+                        {
+                            text: 'Paylaş',
+                            onPress: () => Sharing.shareAsync(uri, {
+                                dialogTitle: selectedSablon?.baslik || 'Dilekçe',
+                                mimeType: 'application/pdf'
+                            })
+                        },
+                        {
+                            text: 'Yazdır',
+                            onPress: () => Print.printAsync({ uri })
+                        }
+                    ]
+                );
+            } else {
+                Alert.alert(
+                    'PDF Oluşturuldu!',
+                    'Dosya başarıyla hazırlandı.',
+                    [
+                        { text: 'Tamam' },
+                        {
+                            text: 'Yazdır',
+                            onPress: () => Print.printAsync({ uri })
+                        }
+                    ]
+                );
+            }
 
         } catch (error) {
             console.error('PDF oluşturma hatası:', error);
             Alert.alert(
                 'Hata',
-                'PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.',
+                `PDF oluşturulamadı: ${error.message}`,
                 [
-                    { text: 'Tamam', style: 'default' },
-                    { text: 'Tekrar Dene', onPress: () => generatePDF() }
+                    { text: 'Tamam' },
+                    { text: 'Tekrar Dene', onPress: generatePDF }
                 ]
             );
         } finally {
@@ -278,20 +228,17 @@ export default function DilekceModulu({ navigation }) {
         }
     };
 
-    // Kategori seçme
     const kategoriSec = (kategori) => {
         setSelectedKategori(kategori);
         setSelectedSablon(null);
     };
 
-    // Şablon seçme ve düzenleme moduna geçme
     const sablonSec = (sablon) => {
         setSelectedSablon(sablon);
         setEditedContent(sablon.sablon);
         setShowEditor(true);
     };
 
-    // Şablonu doldurma modalı
     const sablonuDoldur = () => {
         Alert.alert(
             'Şablon Doldurma',
@@ -303,7 +250,6 @@ export default function DilekceModulu({ navigation }) {
         );
     };
 
-    // Dilekçeyi paylaşma
     const dilekcePaylas = async () => {
         try {
             await Share.share({
@@ -315,7 +261,6 @@ export default function DilekceModulu({ navigation }) {
         }
     };
 
-    // Arama fonksiyonu
     const filterSablonlar = (sablonlar) => {
         if (!searchText) return sablonlar;
         return sablonlar.filter(sablon =>
@@ -324,7 +269,6 @@ export default function DilekceModulu({ navigation }) {
         );
     };
 
-    // Kategori kartı render
     const renderKategori = ({ item }) => (
         <TouchableOpacity
             style={[styles.kategoriKart, { borderLeftColor: item.renk }]}
@@ -342,7 +286,6 @@ export default function DilekceModulu({ navigation }) {
         </TouchableOpacity>
     );
 
-    // Şablon kartı render
     const renderSablon = ({ item }) => (
         <TouchableOpacity
             style={styles.sablonKart}
@@ -368,7 +311,6 @@ export default function DilekceModulu({ navigation }) {
     if (showEditor) {
         return (
             <View style={styles.container}>
-                <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
                 {/* Editor Header */}
                 <View style={styles.editorHeader}>
                     <TouchableOpacity onPress={() => setShowEditor(false)}>
@@ -393,7 +335,7 @@ export default function DilekceModulu({ navigation }) {
                         disabled={isGeneratingPDF}
                     >
                         <MaterialIcons
-                            name={Platform.OS === 'ios' ? 'print' : 'picture-as-pdf'}
+                            name="picture-as-pdf"
                             size={20}
                             color={isGeneratingPDF ? "#999" : "#F44336"}
                         />
@@ -401,7 +343,7 @@ export default function DilekceModulu({ navigation }) {
                             styles.toolButtonText,
                             isGeneratingPDF && styles.toolButtonTextDisabled
                         ]}>
-                            {isGeneratingPDF ? 'Hazırlanıyor...' : (Platform.OS === 'ios' ? 'Yazdır' : 'PDF')}
+                            {isGeneratingPDF ? 'PDF Hazırlanıyor...' : 'PDF Oluştur'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -429,7 +371,6 @@ export default function DilekceModulu({ navigation }) {
     if (selectedKategori) {
         return (
             <View style={styles.container}>
-                <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => setSelectedKategori(null)}>
@@ -465,7 +406,6 @@ export default function DilekceModulu({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
             {/* Header */}
             <View style={styles.header}>
                 <View style={{ width: 24 }} />
@@ -517,11 +457,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: screenWidth * 0.05,
         paddingVertical: screenHeight * 0.02,
-        paddingTop: screenHeight * 0.06, // Safe area için ekstra padding
+        marginBottom: screenHeight * 0.02,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
-        minHeight: screenHeight * 0.1,
     },
     headerTitle: {
         fontSize: screenWidth * 0.045,
@@ -563,7 +502,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: screenWidth * 0.05,
     },
     kategoriListContent: {
-        paddingBottom: Platform.OS === 'android' ? 80 : 70, // Bottom tab navigator için extra padding
+        paddingBottom: Platform.OS === 'android' ? 80 : 70,
     },
     kategoriKart: {
         backgroundColor: '#fff',
@@ -599,10 +538,10 @@ const styles = StyleSheet.create({
         marginHorizontal: screenWidth * 0.05,
         marginBottom: screenHeight * 0.025,
         paddingHorizontal: screenWidth * 0.04,
-        paddingVertical: screenHeight * 0.015,
+        paddingVertical: screenHeight * 0.006,
         borderRadius: screenWidth * 0.025,
         elevation: 2,
-        minHeight: screenHeight * 0.06,
+        minHeight: screenHeight * 0.04,
     },
     searchInput: {
         flex: 1,
@@ -614,7 +553,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: screenWidth * 0.05,
     },
     sablonListContent: {
-        paddingBottom: Platform.OS === 'android' ? 80 : 70, // Bottom tab navigator için extra padding
+        paddingBottom: Platform.OS === 'android' ? 80 : 70,
     },
     sablonKart: {
         backgroundColor: '#fff',
@@ -650,12 +589,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: screenWidth * 0.05,
-        paddingVertical: screenHeight * 0.02,
-        paddingTop: screenHeight * 0.06,
+        paddingVertical: screenHeight * 0.01,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
-        minHeight: screenHeight * 0.1,
+        minHeight: screenHeight * 0.08,
     },
     editorTitle: {
         fontSize: screenWidth * 0.04,
@@ -668,6 +606,7 @@ const styles = StyleSheet.create({
     toolbar: {
         flexDirection: 'row',
         backgroundColor: '#fff',
+        justifyContent: "space-evenly",
         paddingHorizontal: screenWidth * 0.05,
         paddingVertical: screenHeight * 0.012,
         borderBottomWidth: 1,
@@ -703,7 +642,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     editorContent: {
-        paddingBottom: Platform.OS === 'android' ? 80 : 70, // Bottom tab navigator için extra padding
+        paddingBottom: Platform.OS === 'android' ? 80 : 70,
     },
     textEditor: {
         flex: 1,

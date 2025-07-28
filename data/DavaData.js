@@ -1,7 +1,6 @@
 
-// Takvim etkinlikleri
 export const events = {
-    '2025-07-25': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
+    '2025-07-28': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
     '2025-07-30': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
     '2025-08-05': ['Uzlaştırma görüşmesi - 10:30'],
     '2025-08-15': ['Temyiz inceleme - 09:00'],
@@ -17,7 +16,7 @@ export const deadlines = [
     {
         id: 1,
         title: 'İstinaf İtiraz Süresi',
-        date: '2025-07-26',
+        date: '2025-07-30',
         caseNumber: '2025/123',
         clientName: 'Ahmet Yılmaz',
         description: 'İlk derece mahkeme kararına karşı istinaf başvurusu için son gün. Gerekli belgeler hazırlandı.'
@@ -25,7 +24,7 @@ export const deadlines = [
     {
         id: 2,
         title: 'Temyiz İtiraz Süresi',
-        date: '2025-07-27',
+        date: '2025-07-29',
         caseNumber: '2025/456',
         clientName: 'Fatma Kaya',
         description: 'Bölge adliye mahkemesi kararına karşı temyiz başvurusu yapılacak.'
@@ -96,7 +95,6 @@ export const deadlines = [
     }
 ];
 
-// Dava yönetimi için yardımcı fonksiyonlar
 export const calculateKalanGun = (sonTarih) => {
     const bugun = new Date();
     const sonTarihDate = new Date(sonTarih);
@@ -104,14 +102,14 @@ export const calculateKalanGun = (sonTarih) => {
     return fark > 0 ? fark : 0;
 };
 
-// Dava No solu durum gorunumu
+
 export const getDurumRengi = (kalanGun) => {
     if (kalanGun >= 15) return "🟢";
     if (kalanGun >= 7) return "🟠";
     return "🔴";
 };
 
-// Kalan İtiraz Süresi Gününe Göre Renk
+
 export const getDurumHexRengi = (kalanGun) => {
     if (kalanGun >= 15) return '#4CAF50';
     if (kalanGun >= 7) return '#FF9800';
@@ -127,7 +125,7 @@ export const getDurum = (kalanGun) => {
 const rawDavaListesi = [
     {
         id: 1,
-        davaNo: "2024/123",
+        davaNo: "2025/123",
         muvekkil: {
             ad: "Ahmet",
             soyad: "Yılmaz",
@@ -160,7 +158,7 @@ const rawDavaListesi = [
             adres: "Çağlayan Adalet Sarayı, Kağıthane/İstanbul"
         },
         davaTuru: "İcra",
-        durusmaTarihi: "2025-07-25T14:30:00",
+        durusmaTarihi: "2025-07-31",
         itirazSuresiSonTarih: "2025-07-30",
         aciklama: "İcra takip dosyası",
         dosyaSayisi: 8,
@@ -168,7 +166,7 @@ const rawDavaListesi = [
     },
     {
         id: 2,
-        davaNo: "2024/124",
+        davaNo: "2025/124",
         muvekkil: {
             ad: "Fatma",
             soyad: "Demir",
@@ -201,7 +199,7 @@ const rawDavaListesi = [
             adres: "Ankara Adalet Sarayı, Çankaya/Ankara"
         },
         davaTuru: "Boşanma",
-        durusmaTarihi: "2025-08-15T09:00:00",
+        durusmaTarihi: "2025-08-15",
         itirazSuresiSonTarih: "2025-08-05",
         aciklama: "Anlaşmalı boşanma davası",
         dosyaSayisi: 15,
@@ -209,7 +207,7 @@ const rawDavaListesi = [
     },
     {
         id: 3,
-        davaNo: "2024/125",
+        davaNo: "2025/125",
         muvekkil: {
             ad: "Mehmet",
             soyad: "Kaya",
@@ -242,15 +240,15 @@ const rawDavaListesi = [
             adres: "İzmir Adalet Sarayı, Bayraklı/İzmir"
         },
         davaTuru: "Ticari Alacak",
-        durusmaTarihi: "2025-09-10T11:30:00",
+        durusmaTarihi: "2025-09-10",
         itirazSuresiSonTarih: "2025-08-20",
-        aciklama: "Sözleşme ihlali - Alacak: 85.000 TL",
+        aciklama: "Sözleşme ihlali",
         dosyaSayisi: 12,
         sonIslem: "2025-07-15T16:45:00"
     },
     {
         id: 4,
-        davaNo: "2024/126",
+        davaNo: "2025/126",
         muvekkil: {
             ad: "Ayşe",
             soyad: "Öztürk",
@@ -283,15 +281,15 @@ const rawDavaListesi = [
             adres: "Bursa Adalet Sarayı, Osmangazi/Bursa"
         },
         davaTuru: "Tazminat",
-        durusmaTarihi: "2025-07-28T10:00:00",
-        itirazSuresiSonTarih: "2025-07-26",
+        durusmaTarihi: "2025-07-30",
+        itirazSuresiSonTarih: "2025-07-29",
         aciklama: "Trafik kazası tazminat davası",
         dosyaSayisi: 6,
         sonIslem: "2025-07-22T09:30:00"
     },
     {
         id: 5,
-        davaNo: "2024/127",
+        davaNo: "2025/127",
         muvekkil: {
             ad: "Osman",
             soyad: "Şahin",
@@ -324,7 +322,7 @@ const rawDavaListesi = [
             adres: "Antalya Adalet Sarayı, Muratpaşa/Antalya"
         },
         davaTuru: "İş Davası",
-        durusmaTarihi: "2025-08-20T14:00:00",
+        durusmaTarihi: "2025-08-20",
         itirazSuresiSonTarih: "2025-07-30",
         aciklama: "İşçi alacakları davası",
         dosyaSayisi: 9,
@@ -332,7 +330,7 @@ const rawDavaListesi = [
     },
     {
         id: 6,
-        davaNo: "2024/128",
+        davaNo: "2025/128",
         muvekkil: {
             ad: "Zeynep",
             soyad: "Yıldız",
@@ -365,7 +363,7 @@ const rawDavaListesi = [
             adres: "Adana Adalet Sarayı, Seyhan/Adana"
         },
         davaTuru: "Miras",
-        durusmaTarihi: "2025-09-05T13:30:00",
+        durusmaTarihi: "2025-09-05",
         itirazSuresiSonTarih: "2025-08-25",
         aciklama: "Miras taksimi davası",
         dosyaSayisi: 20,
@@ -373,7 +371,7 @@ const rawDavaListesi = [
     },
     {
         id: 7,
-        davaNo: "2024/129",
+        davaNo: "2025/129",
         muvekkil: {
             ad: "Hasan",
             soyad: "Özkan",
@@ -406,15 +404,15 @@ const rawDavaListesi = [
             adres: "Konya Adalet Sarayı, Selçuklu/Konya"
         },
         davaTuru: "Gayrimenkul",
-        durusmaTarihi: "2025-07-26T15:30:00",
-        itirazSuresiSonTarih: "2025-07-26",
+        durusmaTarihi: "2025-07-30",
+        itirazSuresiSonTarih: "2025-07-30",
         aciklama: "Tapu iptali ve tescil davası",
         dosyaSayisi: 14,
         sonIslem: "2025-07-21T12:45:00"
     },
     {
         id: 8,
-        davaNo: "2024/130",
+        davaNo: "2025/130",
         muvekkil: {
             ad: "Gülşen",
             soyad: "Arslan",
@@ -447,7 +445,7 @@ const rawDavaListesi = [
             adres: "Trabzon Adalet Sarayı, Ortahisar/Trabzon"
         },
         davaTuru: "Sözleşme",
-        durusmaTarihi: "2025-09-15T10:30:00",
+        durusmaTarihi: "2025-09-15",
         itirazSuresiSonTarih: "2025-08-10",
         aciklama: "Kira kontratı ihlali davası",
         dosyaSayisi: 7,
@@ -455,7 +453,6 @@ const rawDavaListesi = [
     }
 ];
 
-// Ana dava listesi - dinamik olarak hesaplanmış durum ve itirazSuresi ile
 export const davaListesi = rawDavaListesi.map(dava => {
     const kalanGun = calculateKalanGun(dava.itirazSuresiSonTarih);
     return {
@@ -469,7 +466,6 @@ export const davaListesi = rawDavaListesi.map(dava => {
     };
 });
 
-// Filtreleme fonksiyonları
 export const filterByDurum = (davalar, durum) => {
     if (durum === 'tumu') return davalar;
     return davalar.filter(dava => dava.durum === durum);
@@ -491,7 +487,6 @@ export const searchDavalar = (davalar, searchTerm) => {
     );
 };
 
-// Sıralama fonksiyonları
 export const sortByDurusmaTarihi = (davalar) => {
     return [...davalar].sort((a, b) => new Date(a.durusmaTarihi) - new Date(b.durusmaTarihi));
 };
@@ -500,7 +495,6 @@ export const sortByItirazSuresi = (davalar) => {
     return [...davalar].sort((a, b) => a.itirazSuresi.kalanGun - b.itirazSuresi.kalanGun);
 };
 
-// FlatList için formatlama
 export const formatForFlatList = (davalar) => {
     return davalar.map(dava => ({
         ...dava,

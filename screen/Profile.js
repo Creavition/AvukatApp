@@ -32,7 +32,6 @@ const Profile = ({ onLogout }) => {
             const userEmail = await AsyncStorage.getItem('userEmail');
             const userToken = await AsyncStorage.getItem('userToken');
 
-            // Token'dan tarih çıkar (dummy token format: dummy_token_timestamp)
             let loginDate = 'Bilinmiyor';
             if (userToken && userToken.includes('_')) {
                 const timestamp = userToken.split('_').pop();
@@ -79,34 +78,33 @@ const Profile = ({ onLogout }) => {
             title: 'Hesap Bilgileri',
             subtitle: 'Kişisel bilgilerinizi düzenleyin',
             icon: 'person-outline',
-            onPress: () => Alert.alert('Bilgi', 'Hesap bilgileri özelliği yakında!')
+            onPress: () => Alert.alert('Bilgi', 'Hesap bilgileri')
         },
         {
             id: 2,
             title: 'Bildirimler',
             subtitle: 'Bildirim ayarlarınızı yönetin',
             icon: 'notifications-outline',
-            onPress: () => Alert.alert('Bilgi', 'Bildirim ayarları özelliği yakında!')
+            onPress: () => Alert.alert('Bilgi', 'Bildirim ayarları')
         },
         {
             id: 3,
             title: 'Güvenlik',
             subtitle: 'Şifre ve güvenlik ayarları',
             icon: 'shield-outline',
-            onPress: () => Alert.alert('Bilgi', 'Güvenlik ayarları özelliği yakında!')
+            onPress: () => Alert.alert('Bilgi', 'Güvenlik ayarları')
         },
         {
             id: 4,
             title: 'Yedekleme',
             subtitle: 'Verilerinizi yedekleyin',
             icon: 'cloud-upload-outline',
-            onPress: () => Alert.alert('Bilgi', 'Yedekleme özelliği yakında!')
+            onPress: () => Alert.alert('Bilgi', 'Yedekleme')
         },
     ];
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#2196F3" />
 
             {/* Header with Gradient */}
             <LinearGradient
@@ -165,8 +163,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
     },
     header: {
-        paddingTop: screenHeight * 0.03,
-        paddingBottom: screenHeight * 0.02,
+        paddingVertical: screenHeight * 0.02,
         paddingHorizontal: screenWidth * 0.05,
         alignItems: 'center',
     },
@@ -244,11 +241,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        elevation: 3,
-        shadowColor: '#F44336',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
     },
     logoutText: {
         color: '#fff',

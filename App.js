@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, AppState } from 'react-native';
 import Home from './screen/Home';
 import CaseManagement from './screen/CaseManagement';
 import CaseDetails from './screen/CaseDetails';
@@ -158,6 +158,21 @@ export default function App() {
 
   useEffect(() => {
     checkAuthStatus();
+
+    const handleAppStateChange = (nextAppState) => {
+      if (nextAppState === 'active') {
+        StatusBar.setBackgroundColor('#2196F3', true);
+        StatusBar.setBarStyle('light-content', true);
+        StatusBar.setTranslucent(false);
+        StatusBar.setHidden(false, true);
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription?.remove();
+    };
   }, []);
 
   const checkAuthStatus = async () => {
@@ -210,7 +225,13 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <StatusBar backgroundColor="#2196F3" barStyle="light-content" />
+        <StatusBar
+          backgroundColor="#2196F3"
+          barStyle="light-content"
+          translucent={false}
+          hidden={false}
+          animated={true}
+        />
         <NavigationContainer>
           <MyTabs onLogout={handleLogout} />
         </NavigationContainer>

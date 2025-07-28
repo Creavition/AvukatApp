@@ -1,4 +1,3 @@
-// Dilekçe şablonları veri yapısı
 export const dilekceKategorileri = [
     {
         id: 1,

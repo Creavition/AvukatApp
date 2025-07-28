@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -11,15 +11,14 @@ import {
     Dimensions
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
-// Responsive boyutlandırma için
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function SablonSonuc({ route, navigation }) {
     const { sablon, doldurulmusMetin, formData } = route.params;
-    const [fontSize, setFontSize] = useState(14);
 
-    // Paylaşma fonksiyonu
     const paylas = async () => {
         try {
             await Share.share({
@@ -31,10 +30,9 @@ export default function SablonSonuc({ route, navigation }) {
         }
     };
 
-    // Kopyala
+
     const kopyala = async () => {
         try {
-            // React Native'de Clipboard API kullanılabilir ama şimdilik Alert ile gösterelim
             Alert.alert(
                 'Kopyalandı',
                 'Dilekçe metni panoya kopyalandı.',
@@ -45,7 +43,6 @@ export default function SablonSonuc({ route, navigation }) {
         }
     };
 
-    // Kaydet
     const kaydet = () => {
         Alert.alert(
             'Kaydet',
@@ -55,7 +52,7 @@ export default function SablonSonuc({ route, navigation }) {
                 {
                     text: 'Kaydet',
                     onPress: () => {
-                        // Burada kaydetme işlemi yapılacak
+
                         Alert.alert('Başarılı', 'Dilekçe başarıyla kaydedildi.');
                     }
                 }
@@ -63,27 +60,110 @@ export default function SablonSonuc({ route, navigation }) {
         );
     };
 
-    // PDF Oluştur
-    const pdfOlustur = () => {
-        Alert.alert(
-            'PDF Oluştur',
-            'Bu özellik henüz geliştirme aşamasındadır.',
-            [{ text: 'Tamam' }]
-        );
-    };
 
-    // Yazı boyutunu değiştir
-    const fontSizeChange = (increase) => {
-        if (increase && fontSize < 20) {
-            setFontSize(fontSize + 1);
-        } else if (!increase && fontSize > 10) {
-            setFontSize(fontSize - 1);
+    const pdfOlustur = async () => {
+        try {
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="tr">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${sablon.baslik}</title>
+                <style>
+                    body {
+                        font-family: 'Times New Roman', serif;
+                        line-height: 1.6;
+                        margin: 40px;
+                        color: #333;
+                        background-color: white;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 30px;
+                        border-bottom: 2px solid #333;
+                        padding-bottom: 20px;
+                    }
+                    .title {
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
+                    .content {
+                        text-align: justify;
+                        font-size: 12px;
+                        line-height: 1.8;
+                        margin-bottom: 30px;
+                    }
+                    .footer {
+                        margin-top: 50px;
+                        text-align: right;
+                        font-size: 12px;
+                    }
+                    .page-number {
+                        position: fixed;
+                        bottom: 20px;
+                        right: 50%;
+                        font-size: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="title">${sablon.baslik}</div>
+                </div>
+                
+                <div class="content">
+                    ${doldurulmusMetin.replace(/\n/g, '<br>')}
+                </div>
+                
+                <div class="footer">
+                    <p>Dilekçe Tarihi: ${new Date().toLocaleDateString('tr-TR')}</p>
+                </div>
+                
+                <div class="page-number">
+                    Sayfa 1
+                </div>
+            </body>
+            </html>
+            `;
+
+            const { uri } = await Print.printToFileAsync({
+                html: htmlContent,
+                base64: false
+            });
+
+            console.log('PDF oluşturuldu:', uri);
+
+            const isAvailable = await Sharing.isAvailableAsync();
+
+            if (isAvailable) {
+                Alert.alert(
+                    'PDF Oluşturuldu!',
+                    'Dosya başarıyla hazırlandı. Ne yapmak istiyorsunuz?',
+                    [
+                        { text: 'Tamam', style: 'default' },
+                        {
+                            text: 'Paylaş',
+                            onPress: () => Sharing.shareAsync(uri, {
+                                dialogTitle: sablon.baslik || 'Dilekçe',
+                                mimeType: 'application/pdf'
+                            })
+                        }
+                    ]
+                );
+            } else {
+                Alert.alert('Başarılı', 'PDF başarıyla oluşturuldu!');
+            }
+
+        } catch (error) {
+            console.error('PDF oluşturma hatası:', error);
+            Alert.alert('Hata', 'PDF oluşturulurken bir hata oluştu.');
         }
     };
 
-    // Düzenle
     const duzenle = () => {
-        navigation.goBack(); // Form sayfasına geri dön
+        navigation.goBack();
     };
 
     return (
@@ -128,28 +208,10 @@ export default function SablonSonuc({ route, navigation }) {
                 </TouchableOpacity>
             </View>
 
-            {/* Font Boyutu Kontrolleri */}
-            <View style={styles.fontControls}>
-                <Text style={styles.fontLabel}>Yazı Boyutu:</Text>
-                <TouchableOpacity
-                    style={styles.fontButton}
-                    onPress={() => fontSizeChange(false)}
-                >
-                    <MaterialIcons name="remove" size={20} color="#666" />
-                </TouchableOpacity>
-                <Text style={styles.fontSizeText}>{fontSize}</Text>
-                <TouchableOpacity
-                    style={styles.fontButton}
-                    onPress={() => fontSizeChange(true)}
-                >
-                    <MaterialIcons name="add" size={20} color="#666" />
-                </TouchableOpacity>
-            </View>
-
             {/* Dilekçe İçeriği */}
             <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
                 <View style={styles.paperContainer}>
-                    <Text style={[styles.dilekceText, { fontSize: fontSize }]}>
+                    <Text style={[styles.dilekceText, { fontSize: 14 }]}>
                         {doldurulmusMetin}
                     </Text>
                 </View>
@@ -237,37 +299,6 @@ const styles = StyleSheet.create({
         color: '#333',
         marginLeft: 4,
         fontWeight: '500',
-    },
-    fontControls: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-        justifyContent: 'center',
-    },
-    fontLabel: {
-        fontSize: 14,
-        color: '#666',
-        marginRight: 15,
-    },
-    fontButton: {
-        backgroundColor: '#f0f0f0',
-        borderRadius: 15,
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginHorizontal: 5,
-    },
-    fontSizeText: {
-        fontSize: 14,
-        color: '#333',
-        fontWeight: 'bold',
-        minWidth: 25,
-        textAlign: 'center',
     },
     contentContainer: {
         flex: 1,

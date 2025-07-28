@@ -9,11 +9,15 @@ import {
     Modal,
     ActivityIndicator,
     Dimensions,
-    TextInput
+    TextInput,
+    Platform,
+    Image
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import * as Sharing from 'expo-sharing';
+import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDurumHexRengi } from '../data/DavaData';
 
@@ -27,6 +31,9 @@ export default function CaseDetails({ route, navigation }) {
     const [notlar, setNotlar] = useState([]);
     const [yeniNot, setYeniNot] = useState('');
     const [notEkleniyor, setNotEkleniyor] = useState(false);
+
+    const [fileViewModal, setFileViewModal] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     useEffect(() => {
         if (activeTab === 'iletisim') {
@@ -103,13 +110,13 @@ export default function CaseDetails({ route, navigation }) {
     ]);
 
     const [durusmaBilgileri] = useState({
-        tarih: '15.03.2025',
+        tarih: '29.07.2025',
         saat: '09:30',
         salon: 'A-102',
         hakim: 'Hâkim Mehmet Yılmaz',
         tur: 'İlk Duruşma',
         tahminiSure: '45 dakika',
-        kalanGun: 21
+        kalanGun: 4
     });
 
     useEffect(() => {
@@ -127,7 +134,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     };
 
-    // Not ekleme fonksiyonu
     const notEkle = async () => {
         if (!yeniNot.trim()) {
             Alert.alert('Uyarı', 'Lütfen not içeriği girin.');
@@ -153,7 +159,6 @@ export default function CaseDetails({ route, navigation }) {
             const guncelNotlar = [yeniNotObj, ...notlar];
             setNotlar(guncelNotlar);
 
-            // AsyncStorage'a kaydet
             await AsyncStorage.setItem(`notes_${dava.id}`, JSON.stringify(guncelNotlar));
 
             setYeniNot('');
@@ -166,7 +171,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     };
 
-    // Not silme fonksiyonu
     const notSil = async (notId) => {
         Alert.alert(
             'Not Sil',
@@ -191,7 +195,6 @@ export default function CaseDetails({ route, navigation }) {
         );
     };
 
-    // Hatırlatıcılar
     const [hatirlaticilar] = useState([
         {
             id: 1,
@@ -209,7 +212,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     ]);
 
-    // Hazırlık listesi
     const [hazirlikListesi, setHazirlikListesi] = useState([
         { id: 1, item: 'Kimlik belgesi', tamamlandi: true },
         { id: 2, item: 'Dava dosyası', tamamlandi: true },
@@ -218,7 +220,6 @@ export default function CaseDetails({ route, navigation }) {
         { id: 5, item: 'Vekalet belgesi', tamamlandi: false }
     ]);
 
-    // Status rengi alma
     const getStatusColor = (status) => {
         switch (status) {
             case 'completed': return '#4CAF50';
@@ -228,7 +229,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     };
 
-    // Timeline icon render
     const renderTimelineIcon = (rowData) => {
         let iconName;
         switch (rowData.icon) {
@@ -252,7 +252,6 @@ export default function CaseDetails({ route, navigation }) {
         );
     };
 
-    // Timeline detayı render
     const renderTimelineDetail = (rowData) => {
         return (
             <View style={styles.timelineDetail}>
@@ -268,7 +267,6 @@ export default function CaseDetails({ route, navigation }) {
         );
     };
 
-    // Hazırlık item toggle
     const toggleHazirlikItem = (id) => {
         setHazirlikListesi(prev =>
             prev.map(item =>
@@ -277,7 +275,6 @@ export default function CaseDetails({ route, navigation }) {
         );
     };
 
-    // Dosya türü ikonu getirme
     const getFileIcon = (type) => {
         switch (type.toLowerCase()) {
             case 'pdf': return 'picture-as-pdf';
@@ -291,7 +288,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     };
 
-    // Dosya boyutunu formatla
     const formatFileSize = (bytes) => {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -300,7 +296,6 @@ export default function CaseDetails({ route, navigation }) {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    // Dosya seçme fonksiyonları
     const pickDocument = async () => {
         try {
             setUploading(true);
@@ -411,7 +406,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     };
 
-    // Dosya silme
     const deleteFile = (fileId) => {
         Alert.alert(
             'Dosya Sil',
@@ -429,17 +423,61 @@ export default function CaseDetails({ route, navigation }) {
         );
     };
 
-    // Dosya görüntüleme
-    const viewFile = (file) => {
-        Alert.alert('Dosya Görüntüle', `${file.name} dosyası görüntüleniyor...`);
+    const viewFile = async (file) => {
+        try {
+            if (file.uri) {
+                setSelectedFile(file);
+                setFileViewModal(true);
+            } else {
+                const demoUri = createDemoFileUri(file);
+                setSelectedFile({ ...file, uri: demoUri });
+                setFileViewModal(true);
+            }
+        } catch (error) {
+            console.error('Dosya açma hatası:', error);
+            Alert.alert('Hata', 'Dosya açılamadı.');
+        }
     };
 
-    // Dosya paylaşma
-    const shareFile = (file) => {
-        Alert.alert('Dosya Paylaş', `${file.name} dosyası paylaşılıyor...`);
+    const shareFile = async (file) => {
+        try {
+            if (file.uri) {
+                const isAvailable = await Sharing.isAvailableAsync();
+                if (isAvailable) {
+                    await Sharing.shareAsync(file.uri, {
+                        dialogTitle: file.name,
+                        mimeType: getFileMimeType(file.type)
+                    });
+                } else {
+                    Alert.alert('Hata', 'Paylaşım özelliği bu cihazda kullanılamıyor.');
+                }
+            } else {
+                Alert.alert(`${file.name} demo dosyasıdır. Gerçek dosya paylaşımı için önce dosyayı yükleyin.`);
+            }
+        } catch (error) {
+            console.error('Dosya paylaşma hatası:', error);
+            Alert.alert('Hata', 'Dosya paylaşılamadı.');
+        }
     };
 
-    // Tab içeriklerini render etme
+    const createDemoFileUri = (file) => {
+        if (file.type === 'pdf') {
+            return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+        }
+        return null;
+    };
+
+    const getFileMimeType = (fileType) => {
+        switch (fileType) {
+            case 'pdf': return 'application/pdf';
+            case 'doc': return 'application/msword';
+            case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            case 'jpg': case 'jpeg': return 'image/jpeg';
+            case 'png': return 'image/png';
+            default: return 'application/octet-stream';
+        }
+    };
+
     const renderTabContent = () => {
         switch (activeTab) {
             case 'genel':
@@ -466,7 +504,7 @@ export default function CaseDetails({ route, navigation }) {
                             </View>
                             <View style={styles.infoRow}>
                                 <Text style={styles.infoLabel}>Duruşma:</Text>
-                                <Text style={styles.infoValue}>{dava.durusmaFormatli}</Text>
+                                <Text style={styles.infoValue}>{dava.durusmaTarihi}</Text>
                             </View>
                         </View>
 
@@ -696,17 +734,7 @@ export default function CaseDetails({ route, navigation }) {
                             </View>
                         </View>
 
-                        {/* Duruşma İstatistikleri */}
-                        <View style={styles.statsContainer}>
-                            <View style={styles.statItem}>
-                                <Text style={styles.statNumber}>4</Text>
-                                <Text style={styles.statLabel}>Toplam Safha</Text>
-                            </View>
-                            <View style={styles.statItem}>
-                                <Text style={styles.statNumber}>2</Text>
-                                <Text style={styles.statLabel}>Tamamlanan</Text>
-                            </View>
-                        </View>
+
                     </View>
                 );
 
@@ -787,9 +815,6 @@ export default function CaseDetails({ route, navigation }) {
                     <Ionicons name="arrow-back" size={24} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Dava Detayı</Text>
-                <TouchableOpacity style={styles.menuButton}>
-                    <Ionicons name="ellipsis-vertical" size={24} color="#333" />
-                </TouchableOpacity>
             </View>
 
             {/* Tab Bar */}
@@ -841,7 +866,10 @@ export default function CaseDetails({ route, navigation }) {
             </View>
 
             {/* Tab İçeriği */}
-            <ScrollView style={styles.content}>
+            <ScrollView
+                style={styles.content}
+                contentContainerStyle={styles.scrollContent}
+            >
                 {renderTabContent()}
             </ScrollView>
 
@@ -902,6 +930,83 @@ export default function CaseDetails({ route, navigation }) {
                     </View>
                 </View>
             </Modal>
+
+            {/* Dosya Görüntüleme Modalı */}
+            <Modal
+                visible={fileViewModal}
+                animationType="slide"
+                onRequestClose={() => setFileViewModal(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => setFileViewModal(false)}
+                        >
+                            <Ionicons name="close" size={24} color="#333" />
+                        </TouchableOpacity>
+                        <Text style={styles.modalTitle}>
+                            {selectedFile?.name || 'Dosya'}
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.shareButton}
+                            onPress={() => {
+                                if (selectedFile) {
+                                    shareFile(selectedFile);
+                                }
+                            }}
+                        >
+                            <Ionicons name="share-outline" size={24} color="#2196F3" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.fileViewContainer}>
+                        {selectedFile?.uri ? (
+                            selectedFile.type === 'pdf' ? (
+                                <WebView
+                                    source={{ uri: selectedFile.uri }}
+                                    style={styles.webView}
+                                    startInLoadingState={true}
+                                    renderLoading={() => (
+                                        <View style={styles.loadingContainer}>
+                                            <ActivityIndicator size="large" color="#2196F3" />
+                                            <Text style={styles.loadingText}>PDF yükleniyor...</Text>
+                                        </View>
+                                    )}
+                                />
+                            ) : selectedFile.type === 'jpg' || selectedFile.type === 'png' || selectedFile.type === 'jpeg' ? (
+                                <ScrollView
+                                    style={styles.imageContainer}
+                                    contentContainerStyle={styles.imageContentContainer}
+                                    maximumZoomScale={3}
+                                    minimumZoomScale={1}
+                                >
+                                    <Image
+                                        source={{ uri: selectedFile.uri }}
+                                        style={styles.imageView}
+                                        resizeMode="contain"
+                                    />
+                                </ScrollView>
+                            ) : (
+                                <View style={styles.unsupportedContainer}>
+                                    <MaterialIcons name="description" size={64} color="#ccc" />
+                                    <Text style={styles.unsupportedText}>
+                                        Bu dosya türü önizlenemiyor
+                                    </Text>
+                                    <Text style={styles.unsupportedSubtext}>
+                                        Paylaş butonunu kullanarak dosyayı açabilirsiniz
+                                    </Text>
+                                </View>
+                            )
+                        ) : (
+                            <View style={styles.noFileContainer}>
+                                <MaterialIcons name="error-outline" size={64} color="#ccc" />
+                                <Text style={styles.noFileText}>Dosya bulunamadı</Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -916,8 +1021,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: screenWidth * 0.05,
-        paddingVertical: screenWidth * 0.04,
-        paddingTop: screenWidth * 0.12,
+        paddingVertical: screenWidth * 0.02,
+        paddingTop: Platform.OS === 'android' ? 10 : screenWidth * 0.12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
@@ -929,6 +1034,8 @@ const styles = StyleSheet.create({
         fontSize: screenWidth * 0.045,
         fontWeight: 'bold',
         color: '#333',
+        paddingRight: screenWidth / 3
+
     },
     menuButton: {
         padding: screenWidth * 0.015,
@@ -959,6 +1066,9 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: Platform.OS === 'android' ? 90 : 80,
     },
     tabContent: {
         padding: 20,
@@ -1171,7 +1281,6 @@ const styles = StyleSheet.create({
         color: '#666',
         marginTop: 10,
     },
-    // Duruşma sekmesi için ek stiller
     durusmaHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -1250,7 +1359,6 @@ const styles = StyleSheet.create({
         textDecorationLine: 'line-through',
         color: '#9E9E9E',
     },
-    // Timeline stilleri
     timelineContainer: {
         paddingVertical: 10,
     },
@@ -1316,7 +1424,7 @@ const styles = StyleSheet.create({
         color: '#666',
         fontWeight: 'bold',
     },
-    // Not sistemi stilleri
+
     noteForm: {
         backgroundColor: '#fff',
         borderRadius: 8,
@@ -1405,12 +1513,83 @@ const styles = StyleSheet.create({
     deleteNoteButton: {
         padding: 8,
         borderRadius: 8,
-        backgroundColor: '#FFEBEE',
     },
     noteContent: {
         fontSize: 15,
         color: '#333',
         lineHeight: 22,
         fontWeight: '400',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 16,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+        paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    },
+    closeButton: {
+        padding: 8,
+    },
+    modalTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        flex: 1,
+        textAlign: 'center',
+    },
+    shareButton: {
+        padding: 8,
+    },
+    fileViewContainer: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
+    webView: {
+        flex: 1,
+    },
+    imageContainer: {
+        flex: 1,
+    },
+    imageContentContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100%',
+    },
+    imageView: {
+        width: screenWidth,
+        height: screenHeight * 0.8,
+    },
+    unsupportedContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    unsupportedText: {
+        fontSize: 18,
+        color: '#666',
+        marginTop: 16,
+        textAlign: 'center',
+    },
+    unsupportedSubtext: {
+        fontSize: 14,
+        color: '#999',
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    noFileContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    noFileText: {
+        fontSize: 18,
+        color: '#666',
+        marginTop: 16,
+        textAlign: 'center',
     },
 });
