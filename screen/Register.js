@@ -6,7 +6,6 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
-    Dimensions,
     Platform,
     KeyboardAvoidingView,
     ActivityIndicator,
@@ -17,17 +16,10 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const LoginRegister = ({ navigation, onLoginSuccess }) => {
-    const [currentScreen, setCurrentScreen] = useState('login');
+const Register = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
-    const [showLoginPassword, setShowLoginPassword] = useState(false);
-    const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    const [loginData, setLoginData] = useState({
-        email: '',
-        password: ''
-    });
 
     const [registerData, setRegisterData] = useState({
         fullName: '',
@@ -37,50 +29,8 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         phone: ''
     });
 
-    const handleLogin = async () => {
-        if (!loginData.email || !loginData.password) {
-            Alert.alert('Uyarı', 'Lütfen tüm alanları doldurun.');
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            const registeredUsers = await AsyncStorage.getItem('registeredUsers');
-            const users = registeredUsers ? JSON.parse(registeredUsers) : [];
-
-            const user = users.find(u =>
-                u.email.toLowerCase() === loginData.email.toLowerCase() &&
-                u.password === loginData.password
-            );
-
-            if (!user) {
-                Alert.alert('Hata', 'E-posta veya şifre hatalı! Lütfen kayıt olun.');
-                setLoading(false);
-                return;
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            await AsyncStorage.multiSet([
-                ['userToken', 'dummy_token_' + Date.now()],
-                ['isLoggedIn', 'true'],
-                ['userEmail', user.email],
-                ['userName', user.fullName]
-            ]);
-
-            if (onLoginSuccess) {
-                onLoginSuccess();
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            Alert.alert('Hata', 'Giriş yapılamadı. Lütfen tekrar deneyin.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleRegister = async () => {
+        // Form validasyonu
         if (!registerData.fullName || !registerData.email ||
             !registerData.password || !registerData.confirmPassword) {
             Alert.alert('Uyarı', 'Lütfen tüm alanları doldurun.');
@@ -100,19 +50,22 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
         setLoading(true);
 
         try {
-            const registeredUsers = await AsyncStorage.getItem('registeredUsers');
-            const users = registeredUsers ? JSON.parse(registeredUsers) : [];
+            // Mevcut kullanıcıları al
+            const existingUsers = await AsyncStorage.getItem('registeredUsers');
+            const users = existingUsers ? JSON.parse(existingUsers) : [];
 
-            const existingUser = users.find(u =>
-                u.email.toLowerCase() === registerData.email.toLowerCase()
+            // Email kontrolü
+            const emailExists = users.some(user => 
+                user.email.toLowerCase() === registerData.email.toLowerCase()
             );
 
-            if (existingUser) {
+            if (emailExists) {
                 Alert.alert('Hata', 'Bu e-posta adresi zaten kayıtlı!');
                 setLoading(false);
                 return;
             }
 
+            // Yeni kullanıcı oluştur
             const newUser = {
                 id: Date.now().toString(),
                 fullName: registerData.fullName,
@@ -122,141 +75,34 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                 registeredAt: new Date().toISOString()
             };
 
+            // Kullanıcıyı ekle ve kaydet
             users.push(newUser);
             await AsyncStorage.setItem('registeredUsers', JSON.stringify(users));
 
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Formu temizle
+            setRegisterData({
+                fullName: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                phone: ''
+            });
 
-            Alert.alert('Başarılı', 'Hesabınız oluşturuldu! Şimdi giriş yapabilirsiniz.', [
-                {
-                    text: 'Tamam',
-                    onPress: () => {
+            Alert.alert(
+                'Başarılı', 
+                'Hesabınız oluşturuldu! Şimdi giriş yapabilirsiniz.',
+                [{ text: 'Tamam', onPress: () => navigation.navigate('Login') }]
+            );
 
-                        setRegisterData({
-                            fullName: '',
-                            email: '',
-                            password: '',
-                            confirmPassword: '',
-                            phone: ''
-                        });
-
-                        setCurrentScreen('login');
-                    }
-                }
-            ]);
         } catch (error) {
-            console.error('Register error:', error);
+            console.error('Kayıt hatası:', error);
             Alert.alert('Hata', 'Kayıt oluşturulamadı. Lütfen tekrar deneyin.');
         } finally {
             setLoading(false);
         }
     };
 
-    const renderLoginScreen = () => (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-        >
-            <StatusBar barStyle="light-content" backgroundColor="#1976D2" />
-
-            <LinearGradient
-                colors={['#1976D2', '#2196F3', '#42A5F5']}
-                style={styles.gradient}
-            >
-                <ScrollView
-                    contentContainerStyle={styles.scrollContainer}
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    {/* Header */}
-                    <View style={styles.header}>
-                        <View style={styles.logoContainer}>
-                            <MaterialIcons name="gavel" size={60} color="#FFFFFF" />
-
-                            <Text style={styles.appSubtitle}>Hukuki İşlemleriniz Güvende</Text>
-                        </View>
-                    </View>
-
-                    {/* Form Container */}
-                    <View style={styles.formContainer}>
-                        <Text style={styles.formTitle}>Giriş Yap</Text>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>E-posta</Text>
-                            <View style={styles.inputContainer}>
-                                <Ionicons name="mail-outline" size={20} color="#64B5F6" style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.input}
-                                    value={loginData.email}
-                                    onChangeText={(text) => setLoginData({ ...loginData, email: text })}
-                                    placeholder="E-posta adresinizi girin"
-                                    placeholderTextColor="#B0BEC5"
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                />
-                            </View>
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Şifre</Text>
-                            <View style={styles.inputContainer}>
-                                <Ionicons name="lock-closed-outline" size={20} color="#64B5F6" style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.input}
-                                    value={loginData.password}
-                                    onChangeText={(text) => setLoginData({ ...loginData, password: text })}
-                                    placeholder="Şifrenizi girin"
-                                    placeholderTextColor="#B0BEC5"
-                                    secureTextEntry={!showLoginPassword}
-                                />
-                                <TouchableOpacity
-                                    style={styles.eyeButton}
-                                    onPress={() => setShowLoginPassword(!showLoginPassword)}
-                                >
-                                    <Ionicons
-                                        name={showLoginPassword ? "eye-off-outline" : "eye-outline"}
-                                        size={20}
-                                        color="#64B5F6"
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        <TouchableOpacity style={styles.forgotPassword}>
-                            <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.loginButton, loading && styles.disabledButton]}
-                            onPress={handleLogin}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color="#FFFFFF" />
-                            ) : (
-                                <Text style={styles.loginButtonText}>Giriş Yap</Text>
-                            )}
-                        </TouchableOpacity>
-
-                        <View style={styles.divider}>
-                            <View style={styles.dividerLine} />
-                            <Text style={styles.dividerText}>veya</Text>
-                            <View style={styles.dividerLine} />
-                        </View>
-
-                        <TouchableOpacity
-                            style={styles.switchButton}
-                            onPress={() => setCurrentScreen('register')}
-                        >
-                            <Text style={styles.switchButtonText}>Hesap Oluştur</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </LinearGradient>
-        </KeyboardAvoidingView>
-    );
-
-    const renderRegisterScreen = () => (
+    return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}
@@ -340,14 +186,14 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
                                     onChangeText={(text) => setRegisterData({ ...registerData, password: text })}
                                     placeholder="Şifrenizi girin"
                                     placeholderTextColor="#B0BEC5"
-                                    secureTextEntry={!showRegisterPassword}
+                                    secureTextEntry={!showPassword}
                                 />
                                 <TouchableOpacity
                                     style={styles.eyeButton}
-                                    onPress={() => setShowRegisterPassword(!showRegisterPassword)}
+                                    onPress={() => setShowPassword(!showPassword)}
                                 >
                                     <Ionicons
-                                        name={showRegisterPassword ? "eye-off-outline" : "eye-outline"}
+                                        name={showPassword ? "eye-off-outline" : "eye-outline"}
                                         size={20}
                                         color="#64B5F6"
                                     />
@@ -400,7 +246,7 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
 
                         <TouchableOpacity
                             style={styles.switchButton}
-                            onPress={() => setCurrentScreen('login')}
+                            onPress={() => navigation.navigate('Login')}
                         >
                             <Text style={styles.switchButtonText}>Giriş Yap</Text>
                         </TouchableOpacity>
@@ -409,18 +255,9 @@ const LoginRegister = ({ navigation, onLoginSuccess }) => {
             </LinearGradient>
         </KeyboardAvoidingView>
     );
-
-    return (
-        <View style={styles.mainContainer}>
-            {currentScreen === 'login' ? renderLoginScreen() : renderRegisterScreen()}
-        </View>
-    );
 };
 
 const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-    },
     container: {
         flex: 1,
     },
@@ -439,15 +276,6 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         alignItems: 'center',
-    },
-    appTitle: {
-        fontSize: 36,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        marginTop: 15,
-        textShadowColor: 'rgba(0,0,0,0.2)',
-        textShadowOffset: { width: 0, height: 2 },
-        textShadowRadius: 4,
     },
     appSubtitle: {
         fontSize: 16,
@@ -478,16 +306,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     inputGroup: {
-        marginBottom: 20,
-    },
-    halfInputGroup: {
-        flex: 1,
-        marginBottom: 20,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 15,
+        marginBottom: 15,
     },
     label: {
         fontSize: 16,
@@ -526,15 +345,6 @@ const styles = StyleSheet.create({
     eyeButton: {
         padding: 8,
     },
-    forgotPassword: {
-        alignSelf: 'flex-end',
-        marginBottom: 25,
-    },
-    forgotPasswordText: {
-        color: '#1976D2',
-        fontSize: 14,
-        fontWeight: '600',
-    },
     loginButton: {
         backgroundColor: '#1976D2',
         borderRadius: 15,
@@ -560,7 +370,7 @@ const styles = StyleSheet.create({
     divider: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 25,
+        marginVertical: 15,
     },
     dividerLine: {
         flex: 1,
@@ -588,4 +398,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LoginRegister;
+export default Register;

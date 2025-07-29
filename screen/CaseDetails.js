@@ -338,7 +338,7 @@ export default function CaseDetails({ route, navigation }) {
             }
 
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                mediaTypes: ImagePicker.MediaType.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
                 quality: 1,
@@ -426,16 +426,22 @@ export default function CaseDetails({ route, navigation }) {
     const viewFile = async (file) => {
         try {
             if (file.uri) {
-                setSelectedFile(file);
-                setFileViewModal(true);
+                // Dosyayı direkt indir
+                const isAvailable = await Sharing.isAvailableAsync();
+                if (isAvailable) {
+                    await Sharing.shareAsync(file.uri, {
+                        dialogTitle: `${file.name} - İndir`,
+                        mimeType: getFileMimeType(file.type)
+                    });
+                } else {
+                    Alert.alert('Hata', 'Dosya indirme özelliği bu cihazda kullanılamıyor.');
+                }
             } else {
-                const demoUri = createDemoFileUri(file);
-                setSelectedFile({ ...file, uri: demoUri });
-                setFileViewModal(true);
+                Alert.alert('Bilgi', `${file.name}`);
             }
         } catch (error) {
-            console.error('Dosya açma hatası:', error);
-            Alert.alert('Hata', 'Dosya açılamadı.');
+            console.error('Dosya indirme hatası:', error);
+            Alert.alert('Hata', 'Dosya indirilemedi.');
         }
     };
 
@@ -452,7 +458,7 @@ export default function CaseDetails({ route, navigation }) {
                     Alert.alert('Hata', 'Paylaşım özelliği bu cihazda kullanılamıyor.');
                 }
             } else {
-                Alert.alert(`${file.name} demo dosyasıdır. Gerçek dosya paylaşımı için önce dosyayı yükleyin.`);
+                Alert.alert(`${file.name}`);
             }
         } catch (error) {
             console.error('Dosya paylaşma hatası:', error);
@@ -460,12 +466,6 @@ export default function CaseDetails({ route, navigation }) {
         }
     };
 
-    const createDemoFileUri = (file) => {
-        if (file.type === 'pdf') {
-            return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-        }
-        return null;
-    };
 
     const getFileMimeType = (fileType) => {
         switch (fileType) {

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import Entypo from '@expo/vector-icons/Entypo';
 import { events, davaListesi, searchDavalar, filterByDurum, sortByItirazSuresi, getDurumHexRengi } from "../data/DavaData";
 import Calendar from '../components/Calendar';
 
@@ -26,7 +27,6 @@ export default function CaseManagement({ navigation }) {
 
   useEffect(() => {
     let sonuc = davaListesi;
-
 
     if (searchText.length > 0) {
       sonuc = searchDavalar(sonuc, searchText);
@@ -119,7 +119,7 @@ export default function CaseManagement({ navigation }) {
 
       Alert.alert(
         'Harita Seçenekleri',
-        `${dava.mahkeme.ad} konumunu nasıl görüntülemek istiyorsunuz?`,
+        `${dava.mahkeme.ad} konumunu görüntülemek istiyor musunuz?`,
         [
           { text: 'İptal', style: 'cancel' },
           {
@@ -177,7 +177,7 @@ export default function CaseManagement({ navigation }) {
                 takvimiEkle(item);
               }}
             >
-              <MaterialIcons name="event" size={20} color="#2196F3" />
+              <MaterialIcons name="event" size={25} color="#2196F3" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconButton}
@@ -186,7 +186,7 @@ export default function CaseManagement({ navigation }) {
                 haritayaGit(item);
               }}
             >
-              <MaterialIcons name="map" size={20} color="#2196F3" />
+              <Entypo name="location-pin" size={30} color="#2196F3" />
             </TouchableOpacity>
           </View>
 
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: screenWidth * 0.03,
     padding: screenWidth * 0.04,
-    elevation: 3,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

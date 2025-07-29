@@ -13,7 +13,8 @@ import IletisimModulu from './screen/IletisimModulu';
 import DilekceModulu from './screen/DilekceModulu';
 import SablonForm from './screen/SablonForm';
 import SablonSonuc from './screen/SablonSonuc';
-import LoginRegister from './screen/LoginRegister';
+import Login from './screen/Login';
+import Register from './screen/Register';
 import Profile from './screen/Profile';
 
 const Tab = createBottomTabNavigator();
@@ -45,6 +46,24 @@ function CaseStack() {
       <Stack.Screen
         name="SablonSonuc"
         component={SablonSonuc}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function AuthStack({ onLoginSuccess }) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Login"
+        options={{ headerShown: false }}
+      >
+        {(props) => <Login {...props} onLoginSuccess={onLoginSuccess} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="Register"
+        component={Register}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -215,7 +234,7 @@ export default function App() {
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
           <NavigationContainer>
-            <LoginRegister onLoginSuccess={handleLoginSuccess} />
+            <AuthStack onLoginSuccess={handleLoginSuccess} />
           </NavigationContainer>
         </SafeAreaView>
       </SafeAreaProvider>

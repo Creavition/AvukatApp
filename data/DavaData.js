@@ -1,7 +1,6 @@
-
 export const events = {
     '2025-07-28': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
-    '2025-07-30': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
+    '2025-07-29': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
     '2025-08-05': ['Uzlaştırma görüşmesi - 10:30'],
     '2025-08-15': ['Temyiz inceleme - 09:00'],
     '2025-08-24': ['Müvekkil randevusu - 16:00'],
@@ -24,7 +23,7 @@ export const deadlines = [
     {
         id: 2,
         title: 'Temyiz İtiraz Süresi',
-        date: '2025-07-29',
+        date: '2025-07-30',
         caseNumber: '2025/456',
         clientName: 'Fatma Kaya',
         description: 'Bölge adliye mahkemesi kararına karşı temyiz başvurusu yapılacak.'
@@ -282,7 +281,7 @@ const rawDavaListesi = [
         },
         davaTuru: "Tazminat",
         durusmaTarihi: "2025-07-30",
-        itirazSuresiSonTarih: "2025-07-29",
+        itirazSuresiSonTarih: "2025-07-30",
         aciklama: "Trafik kazası tazminat davası",
         dosyaSayisi: 6,
         sonIslem: "2025-07-22T09:30:00"
