@@ -1,6 +1,6 @@
 export const events = {
     '2025-07-28': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
-    '2025-07-29': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
+    '2025-07-31': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
     '2025-08-05': ['Uzlaştırma görüşmesi - 10:30'],
     '2025-08-15': ['Temyiz inceleme - 09:00'],
     '2025-08-24': ['Müvekkil randevusu - 16:00'],
@@ -15,7 +15,7 @@ export const deadlines = [
     {
         id: 1,
         title: 'İstinaf İtiraz Süresi',
-        date: '2025-07-30',
+        date: '2025-08-01',
         caseNumber: '2025/123',
         clientName: 'Ahmet Yılmaz',
         description: 'İlk derece mahkeme kararına karşı istinaf başvurusu için son gün. Gerekli belgeler hazırlandı.'
@@ -23,7 +23,7 @@ export const deadlines = [
     {
         id: 2,
         title: 'Temyiz İtiraz Süresi',
-        date: '2025-07-30',
+        date: '2025-08-10',
         caseNumber: '2025/456',
         clientName: 'Fatma Kaya',
         description: 'Bölge adliye mahkemesi kararına karşı temyiz başvurusu yapılacak.'
@@ -31,7 +31,7 @@ export const deadlines = [
     {
         id: 3,
         title: 'İcra İtiraz Süresi',
-        date: '2025-07-30',
+        date: '2025-08-08',
         caseNumber: '2025/789',
         clientName: 'Mehmet Demir',
         description: 'İcra müdürlüğü takibi kararına itiraz edilecek.'
@@ -158,7 +158,7 @@ const rawDavaListesi = [
         },
         davaTuru: "İcra",
         durusmaTarihi: "2025-07-31",
-        itirazSuresiSonTarih: "2025-07-30",
+        itirazSuresiSonTarih: "2025-08-02",
         aciklama: "İcra takip dosyası",
         dosyaSayisi: 8,
         sonIslem: "2025-07-20T10:15:00"
@@ -280,8 +280,8 @@ const rawDavaListesi = [
             adres: "Bursa Adalet Sarayı, Osmangazi/Bursa"
         },
         davaTuru: "Tazminat",
-        durusmaTarihi: "2025-07-30",
-        itirazSuresiSonTarih: "2025-07-30",
+        durusmaTarihi: "2025-08-01",
+        itirazSuresiSonTarih: "2025-08-01",
         aciklama: "Trafik kazası tazminat davası",
         dosyaSayisi: 6,
         sonIslem: "2025-07-22T09:30:00"
@@ -322,7 +322,7 @@ const rawDavaListesi = [
         },
         davaTuru: "İş Davası",
         durusmaTarihi: "2025-08-20",
-        itirazSuresiSonTarih: "2025-07-30",
+        itirazSuresiSonTarih: "2025-08-01",
         aciklama: "İşçi alacakları davası",
         dosyaSayisi: 9,
         sonIslem: "2025-07-19T11:20:00"
@@ -403,8 +403,8 @@ const rawDavaListesi = [
             adres: "Konya Adalet Sarayı, Selçuklu/Konya"
         },
         davaTuru: "Gayrimenkul",
-        durusmaTarihi: "2025-07-30",
-        itirazSuresiSonTarih: "2025-07-30",
+        durusmaTarihi: "2025-07-31",
+        itirazSuresiSonTarih: "2025-08-01",
         aciklama: "Tapu iptali ve tescil davası",
         dosyaSayisi: 14,
         sonIslem: "2025-07-21T12:45:00"
