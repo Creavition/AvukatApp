@@ -30,7 +30,6 @@ const Register = ({ navigation }) => {
     });
 
     const handleRegister = async () => {
-        // Form validasyonu
         if (!registerData.fullName || !registerData.email ||
             !registerData.password || !registerData.confirmPassword) {
             Alert.alert('Uyarı', 'Lütfen tüm alanları doldurun.');
@@ -50,11 +49,9 @@ const Register = ({ navigation }) => {
         setLoading(true);
 
         try {
-            // Mevcut kullanıcıları al
             const existingUsers = await AsyncStorage.getItem('registeredUsers');
             const users = existingUsers ? JSON.parse(existingUsers) : [];
 
-            // Email kontrolü
             const emailExists = users.some(user => 
                 user.email.toLowerCase() === registerData.email.toLowerCase()
             );
@@ -65,7 +62,7 @@ const Register = ({ navigation }) => {
                 return;
             }
 
-            // Yeni kullanıcı oluştur
+
             const newUser = {
                 id: Date.now().toString(),
                 fullName: registerData.fullName,
@@ -75,11 +72,10 @@ const Register = ({ navigation }) => {
                 registeredAt: new Date().toISOString()
             };
 
-            // Kullanıcıyı ekle ve kaydet
             users.push(newUser);
             await AsyncStorage.setItem('registeredUsers', JSON.stringify(users));
 
-            // Formu temizle
+
             setRegisterData({
                 fullName: '',
                 email: '',

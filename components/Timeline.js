@@ -41,12 +41,12 @@ const Timeline = ({ deadlines = [] }) => {
 
     const getUrgencyColor = (daysRemaining) => {
         if (daysRemaining < 0) return '#9E9E9E';
-        if (daysRemaining <= 3) return '#F44336'; 
-        if (daysRemaining <= 7) return '#FF9800'; 
-        if (daysRemaining <= 15) return '#FFC107'; 
-        return '#4CAF50'; 
+        if (daysRemaining <= 3) return '#F44336';
+        if (daysRemaining <= 7) return '#FF9800';
+        if (daysRemaining <= 15) return '#FFC107';
+        return '#4CAF50';
     };
-   
+
     const getUrgencyIcon = (daysRemaining) => {
         if (daysRemaining < 0) return 'check-circle';
         if (daysRemaining <= 3) return 'error';
@@ -74,7 +74,10 @@ const Timeline = ({ deadlines = [] }) => {
                 key={item.id}
                 style={[
                     styles.timelineCard,
-                    { borderColor: urgencyColor }
+                    {
+                        borderLeftColor: urgencyColor,
+                        borderColor: urgencyColor
+                    }
                 ]}
                 onPress={() => {
                     setSelectedItem(item);
@@ -93,7 +96,7 @@ const Timeline = ({ deadlines = [] }) => {
                     <View style={[styles.statusIcon, { backgroundColor: urgencyColor }]}>
                         <MaterialIcons
                             name={urgencyIcon}
-                            size={20}
+                            size={16}
                             color="#fff"
                         />
                     </View>
@@ -242,15 +245,21 @@ const Timeline = ({ deadlines = [] }) => {
 
     const sortedDeadlines = deadlines
         .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 20); 
+        .slice(0, 20);
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <MaterialIcons name="schedule" size={20} color="#333" />
-                <Text style={styles.headerTitle}>Yaklaşan İtiraz Süreleri</Text>
+                <View style={styles.headerIconContainer}>
+                    <MaterialIcons name="schedule" size={22} color="#fff" />
+                </View>
+                <View style={styles.headerTextContainer}>
+                    <Text style={styles.headerTitle}>Yaklaşan İtiraz Süreleri</Text>
+                </View>
                 {sortedDeadlines.length > 0 && (
-                    <Text style={styles.countBadge}>{sortedDeadlines.length}</Text>
+                    <View style={styles.countBadgeContainer}>
+                        <Text style={styles.countBadge}>{sortedDeadlines.length}</Text>
+                    </View>
                 )}
             </View>
 
@@ -261,8 +270,9 @@ const Timeline = ({ deadlines = [] }) => {
                     contentContainerStyle={styles.scrollContent}
                     showsHorizontalScrollIndicator={false}
                     decelerationRate="fast"
-                    snapToInterval={CARD_WIDTH + 10}
+                    snapToInterval={CARD_WIDTH + 12}
                     snapToAlignment="start"
+                    pagingEnabled={false}
                 >
                     {sortedDeadlines.map(renderTimelineCard)}
                 </ScrollView>
@@ -280,145 +290,187 @@ const Timeline = ({ deadlines = [] }) => {
     );
 };
 
-const CARD_WIDTH = width * 0.4; 
+const CARD_WIDTH = width * 0.37;
 
 const styles = StyleSheet.create({
     container: {
         width: '100%',
         backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: width * 0.04,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        marginBottom: width * 0.05,
+        borderRadius: 20,
+        padding: 20,
+        marginBottom: 25,
+        borderWidth: 1,
+        borderColor: '#F0F4F8',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: width * 0.04,
-        paddingBottom: width * 0.025,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        marginBottom: 16,
     },
-    headerTitle: {
-        fontSize: width * 0.035,
-        fontWeight: 'bold',
-        marginLeft: width * 0.015,
-        color: '#333',
+    headerIconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: '#2196F3',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    headerTextContainer: {
         flex: 1,
     },
-    countBadge: {
-        backgroundColor: '#2196F3',
-        color: '#fff',
-        fontSize: width * 0.03,
+    headerTitle: {
+        fontSize: 18,
         fontWeight: 'bold',
-        paddingHorizontal: width * 0.02,
-        paddingVertical: width * 0.005,
-        borderRadius: 10,
-        minWidth: width * 0.05,
-        textAlign: 'center',
+        color: '#1E293B',
+        marginBottom: 2,
+    },
+    headerSubtitle: {
+        fontSize: 13,
+        color: '#64748B',
+        fontWeight: '500',
+    },
+    countBadgeContainer: {
+        backgroundColor: '#2196F3',
+        borderRadius: 12,
+        minWidth: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+    },
+    countBadge: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: 'bold',
     },
     scrollContainer: {
-        marginHorizontal: -width * 0.015,
+        marginHorizontal: -6,
+        marginTop: 8,
     },
     scrollContent: {
-        paddingHorizontal: width * 0.015,
+        paddingHorizontal: 6,
+        paddingRight: 18,
     },
     timelineCard: {
         width: CARD_WIDTH,
-        backgroundColor: '#f8f9fa',
-        borderRadius: 12,
-        padding: width * 0.04,
-        marginRight: width * 0.025,
-        borderTopWidth: 4,
+        backgroundColor: '#FAFAFA',
+        borderRadius: 16,
+        padding: 16,
+        marginRight: 12,
         borderWidth: 1,
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        borderColor: '#F0F4F8',
+        borderLeftWidth: 4,
     },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: width * 0.03,
+        marginBottom: 12,
     },
     dateContainer: {
         alignItems: 'flex-start',
-        paddingTop: width * 0.008
+        paddingTop: 2,
+        paddingRight: 4
     },
     dateText: {
-        fontSize: width * 0.045,
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
-        lineHeight: width * 0.05,
+        color: '#1E293B',
+        lineHeight: 20,
     },
     yearText: {
-        fontSize: width * 0.03,
-        color: '#666',
-        marginTop: width * 0.005,
+        fontSize: 12,
+        color: '#64748B',
+        marginTop: 2,
     },
     statusIcon: {
-        width: width * 0.07,
-        height: width * 0.07,
-        borderRadius: width * 0.035,
+        width: 22,
+        height: 22,
+        borderRadius: 11,
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 2,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.15,
         shadowRadius: 2,
     },
     cardBody: {
-        marginBottom: width * 0.03,
+        marginBottom: 12,
     },
     cardTitle: {
-        fontSize: width * 0.035,
+        fontSize: 14,
         fontWeight: '600',
-        color: '#333',
-        lineHeight: width * 0.045,
-        marginBottom: width * 0.02,
-        minHeight: width * 0.09,
+        color: '#1E293B',
+        lineHeight: 18,
+        marginBottom: 8,
+        minHeight: 36,
     },
     caseInfo: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: width * 0.01,
+        marginBottom: 4,
+        backgroundColor: '#F8FAFC',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
     },
     caseNumber: {
         fontSize: 11,
-        color: '#666',
+        color: '#64748B',
         marginLeft: 4,
         flex: 1,
+        fontWeight: '500',
     },
     clientInfo: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 4,
+        backgroundColor: '#F8FAFC',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
     },
     clientName: {
         fontSize: 11,
-        color: '#666',
+        color: '#64748B',
         marginLeft: 4,
         flex: 1,
+        fontWeight: '500',
+    },
+    clientInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4,
+        backgroundColor: '#F8FAFC',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    clientName: {
+        fontSize: 11,
+        color: '#64748B',
+        marginLeft: 4,
+        flex: 1,
+        fontWeight: '500',
     },
     cardFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#eee',
+        borderTopColor: '#F0F4F8',
         paddingTop: 8,
+        marginTop: 4,
     },
     urgencyBadge: {
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 10,
+        borderRadius: 8,
         flex: 1,
         marginRight: 8,
     },
@@ -432,14 +484,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         paddingVertical: 30,
+        backgroundColor: '#F8FAFC',
+        borderRadius: 12,
+        marginTop: 8,
     },
     emptyStateText: {
-        fontSize: 12,
-        color: '#999',
+        fontSize: 14,
+        color: '#64748B',
         marginTop: 8,
+        fontWeight: '500',
         textAlign: 'center',
     },
-
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',

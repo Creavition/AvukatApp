@@ -14,7 +14,7 @@ import {
     SafeAreaView,
     Platform,
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -102,7 +102,7 @@ export default function IletisimModulu({ route, navigation }) {
                 id: 1,
                 kisiId: 1,
                 tip: 'telefon',
-                tarih: '2025-01-20',
+                tarih: '2025-07-20',
                 saat: '14:30',
                 sure: '15 dakika',
                 konu: `${dava.davaTuru} davası için duruşma hazırlığı`,
@@ -115,7 +115,7 @@ export default function IletisimModulu({ route, navigation }) {
                 id: 2,
                 kisiId: 2,
                 tip: 'email',
-                tarih: '2025-01-18',
+                tarih: '2025-07-18',
                 saat: '09:15',
                 konu: 'Uzlaşma teklifi gönderildi',
                 notlar: `${dava.davaNo} numaralı dava için uzlaşma teklifimiz iletildi.`
@@ -127,7 +127,7 @@ export default function IletisimModulu({ route, navigation }) {
                 id: 3,
                 kisiId: 1,
                 tip: 'whatsapp',
-                tarih: '2025-01-15',
+                tarih: '2025-07-15',
                 saat: '16:45',
                 konu: 'Duruşma tarih hatırlatması',
                 notlar: `${dava.durusmaTarihi} tarihindeki duruşma hatırlatıldı.`

@@ -7,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform, StatusBar, AppState } from 'react-native';
 
-// Ekranlar
 import Home from './screen/Home';
 import CaseManagement from './screen/CaseManagement';
 import CaseDetails from './screen/CaseDetails';
@@ -23,7 +22,6 @@ import SplashScreen from './components/SplashScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// --- Alt Stack'ler ---
 function CaseStack() {
   return (
     <Stack.Navigator>
@@ -57,7 +55,6 @@ function AuthStack({ onLoginSuccess }) {
   );
 }
 
-// --- Alt Sekmeli Yapı ---
 function MyTabs({ onLogout }) {
   const insets = useSafeAreaInsets();
 
@@ -153,7 +150,6 @@ export default function App() {
   };
 
   const handleLoginSuccess = () => {
-    // Giriş başarılı → direkt Tab yapısına geç
     setIsAuthenticated(true);
   };
 

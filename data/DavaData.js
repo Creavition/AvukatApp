@@ -1,6 +1,6 @@
 export const events = {
     '2025-07-28': ['Mahkeme duruşması - 10:00', 'Müvekkil görüşmesi - 14:30'],
-    '2025-07-31': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
+    '2025-08-01': ['Dosya inceleme - 09:00', 'İstinaf başvurusu - 11:00', 'Avukat toplantısı - 15:30'],
     '2025-08-05': ['Uzlaştırma görüşmesi - 10:30'],
     '2025-08-15': ['Temyiz inceleme - 09:00'],
     '2025-08-24': ['Müvekkil randevusu - 16:00'],
@@ -161,7 +161,6 @@ const rawDavaListesi = [
         itirazSuresiSonTarih: "2025-08-02",
         aciklama: "İcra takip dosyası",
         dosyaSayisi: 8,
-        sonIslem: "2025-07-20T10:15:00"
     },
     {
         id: 2,
@@ -202,7 +201,6 @@ const rawDavaListesi = [
         itirazSuresiSonTarih: "2025-08-05",
         aciklama: "Anlaşmalı boşanma davası",
         dosyaSayisi: 15,
-        sonIslem: "2025-07-18T14:22:00"
     },
     {
         id: 3,
@@ -243,7 +241,6 @@ const rawDavaListesi = [
         itirazSuresiSonTarih: "2025-08-20",
         aciklama: "Sözleşme ihlali",
         dosyaSayisi: 12,
-        sonIslem: "2025-07-15T16:45:00"
     },
     {
         id: 4,
@@ -280,11 +277,10 @@ const rawDavaListesi = [
             adres: "Bursa Adalet Sarayı, Osmangazi/Bursa"
         },
         davaTuru: "Tazminat",
-        durusmaTarihi: "2025-08-01",
-        itirazSuresiSonTarih: "2025-08-01",
+        durusmaTarihi: "2025-08-05",
+        itirazSuresiSonTarih: "2025-08-02",
         aciklama: "Trafik kazası tazminat davası",
-        dosyaSayisi: 6,
-        sonIslem: "2025-07-22T09:30:00"
+        dosyaSayisi: 6
     },
     {
         id: 5,
@@ -322,10 +318,9 @@ const rawDavaListesi = [
         },
         davaTuru: "İş Davası",
         durusmaTarihi: "2025-08-20",
-        itirazSuresiSonTarih: "2025-08-01",
+        itirazSuresiSonTarih: "2025-08-03",
         aciklama: "İşçi alacakları davası",
         dosyaSayisi: 9,
-        sonIslem: "2025-07-19T11:20:00"
     },
     {
         id: 6,
@@ -366,7 +361,6 @@ const rawDavaListesi = [
         itirazSuresiSonTarih: "2025-08-25",
         aciklama: "Miras taksimi davası",
         dosyaSayisi: 20,
-        sonIslem: "2025-07-10T15:10:00"
     },
     {
         id: 7,
@@ -403,11 +397,10 @@ const rawDavaListesi = [
             adres: "Konya Adalet Sarayı, Selçuklu/Konya"
         },
         davaTuru: "Gayrimenkul",
-        durusmaTarihi: "2025-07-31",
-        itirazSuresiSonTarih: "2025-08-01",
+        durusmaTarihi: "2025-08-10",
+        itirazSuresiSonTarih: "2025-08-08",
         aciklama: "Tapu iptali ve tescil davası",
         dosyaSayisi: 14,
-        sonIslem: "2025-07-21T12:45:00"
     },
     {
         id: 8,
@@ -448,7 +441,6 @@ const rawDavaListesi = [
         itirazSuresiSonTarih: "2025-08-10",
         aciklama: "Kira kontratı ihlali davası",
         dosyaSayisi: 7,
-        sonIslem: "2025-07-16T08:15:00"
     }
 ];
 

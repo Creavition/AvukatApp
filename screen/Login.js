@@ -26,7 +26,6 @@ const Login = ({ navigation, onLoginSuccess }) => {
     });
 
     const handleLogin = async () => {
-        // Form validasyonu
         if (!loginData.email || !loginData.password) {
             Alert.alert('Uyarı', 'Lütfen tüm alanları doldurun.');
             return;
@@ -35,11 +34,9 @@ const Login = ({ navigation, onLoginSuccess }) => {
         setLoading(true);
 
         try {
-            // Kayıtlı kullanıcıları al
             const registeredUsers = await AsyncStorage.getItem('registeredUsers');
             const users = registeredUsers ? JSON.parse(registeredUsers) : [];
 
-            // Kullanıcı kontrolü
             const user = users.find(u =>
                 u.email.toLowerCase() === loginData.email.toLowerCase() &&
                 u.password === loginData.password
@@ -51,16 +48,13 @@ const Login = ({ navigation, onLoginSuccess }) => {
                 return;
             }
 
-            // Kullanıcı bilgilerini kaydet
             await AsyncStorage.setItem('userToken', 'dummy_token_' + Date.now());
             await AsyncStorage.setItem('isLoggedIn', 'true');
             await AsyncStorage.setItem('userEmail', user.email);
             await AsyncStorage.setItem('userName', user.fullName);
 
-            // Formu temizle
             setLoginData({ email: '', password: '' });
 
-            // Başarılı giriş callback'i
             if (onLoginSuccess) {
                 onLoginSuccess();
             }

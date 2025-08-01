@@ -66,42 +66,42 @@ export default function CaseDetails({ route, navigation }) {
 
     const [durusmaSafhalari] = useState([
         {
-            time: '15.01.2025',
+            time: '15.07.2025',
             title: 'Dava Dilekçesi Verildi',
             description: 'İlk dilekçe mahkemeye sunuldu',
             status: 'completed',
             icon: 'document-text'
         },
         {
-            time: '25.01.2025',
+            time: '25.07.2025',
             title: 'Davalıya Tebligat',
             description: 'Dava dilekçesi karşı tarafa tebliğ edildi',
             status: 'completed',
             icon: 'mail'
         },
         {
-            time: '15.02.2025',
+            time: '03.08.2025',
             title: 'Cevap Dilekçesi Süresi',
-            description: '30 günlük cevap süresi başladı',
+            description: 'Cevap süresi başladı',
             status: 'pending',
             icon: 'time'
         },
         {
-            time: '15.03.2025',
+            time: '15.08.2025',
             title: 'İlk Duruşma',
             description: 'Mahkeme Salonu A-102, Saat: 09:30',
             status: 'upcoming',
             icon: 'business'
         },
         {
-            time: '20.03.2025',
+            time: '20.08.2025',
             title: 'Delil Toplama',
             description: 'Ek belge ve tanık beyanları',
             status: 'upcoming',
             icon: 'folder'
         },
         {
-            time: '10.04.2025',
+            time: '10.09.2025',
             title: 'Son Duruşma',
             description: 'Nihai karar aşaması',
             status: 'upcoming',
@@ -110,7 +110,7 @@ export default function CaseDetails({ route, navigation }) {
     ]);
 
     const [durusmaBilgileri] = useState({
-        tarih: '29.07.2025',
+        tarih: '15.08.2025',
         saat: '09:30',
         salon: 'A-102',
         hakim: 'Hâkim Mehmet Yılmaz',
@@ -423,27 +423,6 @@ export default function CaseDetails({ route, navigation }) {
         );
     };
 
-    const viewFile = async (file) => {
-        try {
-            if (file.uri) {
-                // Dosyayı direkt indir
-                const isAvailable = await Sharing.isAvailableAsync();
-                if (isAvailable) {
-                    await Sharing.shareAsync(file.uri, {
-                        dialogTitle: `${file.name} - İndir`,
-                        mimeType: getFileMimeType(file.type)
-                    });
-                } else {
-                    Alert.alert('Hata', 'Dosya indirme özelliği bu cihazda kullanılamıyor.');
-                }
-            } else {
-                Alert.alert('Bilgi', `${file.name}`);
-            }
-        } catch (error) {
-            console.error('Dosya indirme hatası:', error);
-            Alert.alert('Hata', 'Dosya indirilemedi.');
-        }
-    };
 
     const shareFile = async (file) => {
         try {
@@ -591,12 +570,6 @@ export default function CaseDetails({ route, navigation }) {
                                         </View>
 
                                         <View style={styles.fileActions}>
-                                            <TouchableOpacity
-                                                style={styles.actionButton}
-                                                onPress={() => viewFile(item)}
-                                            >
-                                                <Ionicons name="eye-outline" size={20} color="#2196F3" />
-                                            </TouchableOpacity>
 
                                             <TouchableOpacity
                                                 style={styles.actionButton}
@@ -636,10 +609,7 @@ export default function CaseDetails({ route, navigation }) {
                                     <Text style={styles.durusmaTarih}>{durusmaBilgileri.tarih}</Text>
                                     <Text style={styles.durusmaSaat}>{durusmaBilgileri.saat}</Text>
                                 </View>
-                                <View style={styles.countdownContainer}>
-                                    <Text style={styles.countdownNumber}>{durusmaBilgileri.kalanGun}</Text>
-                                    <Text style={styles.countdownLabel}>gün kaldı</Text>
-                                </View>
+
                             </View>
 
                             <View style={styles.durusmaDetay}>

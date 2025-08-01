@@ -18,7 +18,6 @@ const SplashScreen = ({ onFinish }) => {
     const fadeAnimation = useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
-        // Logo animasyonu
         Animated.sequence([
             Animated.timing(logoAnimation, {
                 toValue: 1,
