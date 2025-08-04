@@ -268,7 +268,7 @@ export default function CaseManagement({ navigation }) {
             style={{ paddingRight: 10, alignItems: "center" }}
             name="search"
             size={24}
-            color="black"
+            color="blue"
           />
           <TextInput
             style={styles.input}
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     height: screenHeight * 0.06,
     width: screenWidth * 0.9,
     maxWidth: 400,
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: screenWidth * 0.025,
     borderColor: "black",
     marginTop: screenHeight * 0.02,
